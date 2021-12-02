@@ -95,7 +95,8 @@ setResult("Setting", 15, "z-drift table path");
 setResult("Value", 15, DriftTable_path_Z +"DriftTable.njt");
 
 saveAs("Results", settings_file_path);
-run("Close");
+//run("Close");
+close("Results");
 
 //======================================================================
 // ----- Let's go ! -----

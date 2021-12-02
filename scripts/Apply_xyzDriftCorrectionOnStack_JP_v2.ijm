@@ -123,6 +123,10 @@ IJ.log("------------------");
 IJ.log("->> z-registration");
 t_start = getTime();
 
+filename_no_extension = File.getNameWithoutExtension(my_file_path);
+IJ.log(filename_no_extension);
+IJ.log(my_file_path);
+
 // ----- opening the correct file-----	
 	if (!XY_registration){
 		run("TIFF Virtual Stack...", "open="+my_file_path);
@@ -140,6 +144,7 @@ IJ.log(DriftTable_path_Z);
 setBatchMode(true); 
 
 thisTitle = getTitle();
+print(thisTitle);
 
 getVoxelSize(width, height, depth, unit);
 run("Reslice [/]...", "output="+depth+" start="+reslice_mode+" avoid");
