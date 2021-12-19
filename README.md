@@ -14,6 +14,7 @@ Drift correction workflow
 In images with two channels, the channels need to be split and the drift is first estimated one of the channels. The drift correction can then be applied to the second (or more) channels.
 
 ![image](images/methodDescription.png)
+*Figure 1: Fast4DReg workflow. 3D time stack images can ce corrected for drift in xy-, z- and/or xyz-directions.*
 
 # Dependencies
 
@@ -27,6 +28,7 @@ Fast4DReg requires the NanoJ-Core plugin, which can be installed through Fiji up
 2. Open the "estimate-drift" script and click run. User interface opens.
 
 ![image](images/Fast4DregUI.png)
+*Figure 2: Estimte and apply user interface*
 
 3. In the user interface
      - Set the path to the file to be corrected
@@ -68,6 +70,8 @@ the faster scale sample motion, it is better to compare to the previous frame.
 1. Open the "apply" script and click run. User interface opens.  
 
 ![image](images/applyUI.png)
+*Figure 3: Apply user interface*
+
 
 2. Browse to the file that you want to which you want to apply the correction.
 3. Browse to the settings file (called settings.csv)
@@ -81,7 +85,7 @@ Done!
 
 **Fiji crashing without notice**
 
-Windows might not have OpenCL installed. If you experience Fiji crashing without notice, install the OpenCL (through the Microsoft store library).
+Windows might not have OpenCL installed. If you experience Fiji crashing without notice, [install the OpenCL through the Microsoft store library.](https://www.microsoft.com/en-us/p/opencl-and-opengl-compatibility-pack/9nqpsl29bfff?activetab=pivot:overviewtab)
 
 **Importance of file locations**
 
