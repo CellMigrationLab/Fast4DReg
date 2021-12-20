@@ -1,9 +1,9 @@
 # Fast4DReg
 
-Fast4DReg is a script that can be used for quick drift correction in time-lapse stacks. The script can be used to correct drift in x-, y- and/or z-directions. The correction is based on cross-correlation between projections of time points - making the drift estimation faster than in many other correction methods. Fast4DReg uses the NanoJ-Core is an open-source ImageJ and Fiji plugin.
+Fast4DReg is a script that can be used for quick drift correction in time-lapse stacks. The script can be used to correct drift in x-, y- and/or z-directions. The correction is based on cross-correlation between projections of time points - making the drift estimation faster than many other correction methods. Fast4DReg uses the NanoJ-Core Fiji plugin.
 
 Drift correction workflow
-1. From 3D time series z-projections are created for each time point to create 2D time series. 
+1. From 3D time series z-projections are created at each time point to create 2D time series. 
 2. NanoJ-Core estimates the linear x-y drift between two images by calculating their cross-correlation matrix (CCM). The location of the peak intensity in the CCM determines the linear shift between the two images. 
 3. Once the drift is estimated, the dataset can be directly corrected frame by frame according to the amount of measured drift. 
 4. Once the images have been corrected the projected images are built back to 3D time series.
