@@ -92,9 +92,15 @@ Windows might not have OpenCL installed. If you experience Fiji crashing without
 Make sure not to move the drift table from the results folder as the path to the drift table is hardcoded to the settings.csv file. 
 
 
+# Contributors
+
+* [Joanna Pylvänäinen](https://twitter.com/JwPylvanainen)
+* [Romain F. Laine](https://twitter.com/LaineBioImaging)
+* [Guillaume Jacquemet](https://twitter.com/guijacquemet)
 
 
-# References
+
+# When using this script, please cite the NanoJ paper
 
 Laine, R. F., Tosheva, K. L., Gustafsson, N., Gray, R., Almada, P., Albrecht, D., Risa, G. T., Hurtig, F., Lindås, A. C., Baum, B., Mercer, J., Leterrier, C., Pereira, P. M., Culley, S., & Henriques, R. (2019). NanoJ: a high-performance open-source super-resolution microscopy toolbox. Journal of physics D: Applied physics, 52(16), 163001. https://doi.org/10.1088/1361-6463/ab0261
 
