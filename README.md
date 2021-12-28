@@ -33,7 +33,7 @@ Fast4DReg requires the NanoJ-Core plugin, which can be installed through Fiji up
 3. In the user interface
      - Set the path to the file to be corrected
      - if you want to correct for xy-drift, tick the xy-drift correction box
-     - Select projection type (maximum or average intensity) 
+     - Select projection type used for xy-drift estimation (maximum or average intensity) 
      - This sets the number of frames to average together to make coarser timepoints on which the
 cross-correlation analysis will be run to calculate drift. Setting this value to 1 will calculate
 straight frame-to-frame cross-correlations and while this should capture drift very accurately, it
@@ -52,6 +52,7 @@ the faster scale sample motion, it is better to compare to the previous frame.
     - Crop output will crop out the black frame created by the image moving. This will be performed on default if continued to z-correction.
     - if you want to correct for z-drift, tick the z-drift correction box.
     - Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
+    - Select projection type used for z-drift estimation (maximum or average intensity) 
     - next three - see above
     - Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved.
     - Save RAM - if ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
