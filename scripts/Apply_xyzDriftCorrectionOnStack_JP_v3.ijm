@@ -5,7 +5,7 @@ run("Collect Garbage");
 
 // select file to be corrected
 #@ File (label="Select the file to be corrected", style="open") my_file_path ;
-#@ File (label="Select settings file", style="open") settings_file_path ;
+#@ File (label="Select settings file (.csv)", style="open") settings_file_path ;
 
 
 // ----- Let's go ! -----
@@ -25,14 +25,14 @@ XY_registration = Table.get("Value", 1);
 //reference_xy = Table.getString("Value",5);
 crop_output = Table.getString("Value",6);
 z_registration = Table.getString("Value",7);
-reslice_mode = Table.getString("Value",8);
+reslice_mode = Table.getString("Value",9);
 //time_z = Table.getString("Value",9);
 //max_z = Table.getString("Value",10);
 //reference_z = Table.getString("Value",11);
-extend_stack_to_fit = Table.getString("Value",12);
-ram_conservative_mode = Table.getString("Value",13);
-DriftTable_path_XY = Table.getString("Value",14);
-DriftTable_path_Z = Table.getString("Value",15);
+extend_stack_to_fit = Table.getString("Value",13);
+ram_conservative_mode = Table.getString("Value",14);
+DriftTable_path_XY = Table.getString("Value",15);
+DriftTable_path_Z = Table.getString("Value",16);
 
 run("Close");
 
@@ -271,6 +271,7 @@ setBatchMode(false);
 IJ.log("------");
 IJ.log("Time taken: "+round((getTime()-t_start)/1000)+"s");
 IJ.log("All done.");
+showMessage("All DONE!");
 
 
 // ----- Helper functions -----

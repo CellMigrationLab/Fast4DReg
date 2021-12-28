@@ -9,7 +9,7 @@ run("Collect Garbage");
 //settings for xy-drif correction
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint1;
 #@ boolean (label = "<html><b>xy-drift correction (if not don't fill values)</b></html>") XY_registration ; 
-#@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type ;
+#@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_xy ;
 
 #@ Integer (label="Time averaging (default 100, 1 - disables)", min=1, max=100, style="spinner") time_xy ;
 
@@ -23,6 +23,7 @@ run("Collect Garbage");
 
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint2;
 #@ boolean (label = "<html><b>z-drift correction (if not don't fill values)</b></html>") z_registration ; 
+#@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_z ;
 
 #@ String(label = "Reslice mode", choices={"Top","Left"}, style="listBox") reslice_mode ;
 
@@ -41,8 +42,8 @@ run("Collect Garbage");
 //set file paths
 filename_no_extension = File.getNameWithoutExtension(my_file_path);
 settings_file_path = File.getDirectory(my_file_path)+filename_no_extension+"_settings.csv"; 
-DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type+"_xy_"; //added xy in file name /JP
-DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type+"-"+reslice_mode+"_z_"; //z added to the name
+DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_xy+"_xy_"; //added xy in file name /JP
+DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_"; //z added to the name
 
 // create a new table
 // set columns
@@ -53,7 +54,7 @@ setResult("Setting", 1, "xy-registration");
 setResult("Value", 1, XY_registration);
 
 setResult("Setting", 2, "xy-projection type");
-setResult("Value", 2, projection_type);
+setResult("Value", 2, projection_type_xy);
 
 setResult("Setting", 3, "xy-time averaging");
 setResult("Value", 3, time_xy);
@@ -70,29 +71,32 @@ setResult("Value", 6, crop_output);
 setResult("Setting", 7, "z-registration");
 setResult("Value", 7, z_registration);
 
-setResult("Setting", 8, "z-reslice mode");
-setResult("Value", 8, reslice_mode);
+setResult("Setting", 8, "z-projection type");
+setResult("Value", 8, projection_type_z);
 
-setResult("Setting", 9, "z-time averaging");
-setResult("Value", 9, time_z);
+setResult("Setting", 9, "z-reslice mode");
+setResult("Value", 9, reslice_mode);
 
-setResult("Setting", 10, "z-maximum expected drift");
-setResult("Value", 10, max_z);
+setResult("Setting", 10, "z-time averaging");
+setResult("Value", 10, time_z);
 
-setResult("Setting", 11, "z-reference frame");
-setResult("Value", 11, reference_z);
+setResult("Setting", 11, "z-maximum expected drift");
+setResult("Value", 11, max_z);
 
-setResult("Setting", 12, "Extend stack to fit");
-setResult("Value", 12, extend_stack_to_fit);
+setResult("Setting", 12, "z-reference frame");
+setResult("Value", 12, reference_z);
 
-setResult("Setting", 13, "Save RAM");
-setResult("Value", 13, ram_conservative_mode);
+setResult("Setting", 13, "Extend stack to fit");
+setResult("Value", 13, extend_stack_to_fit);
 
-setResult("Setting", 14, "xy-drift table path");
-setResult("Value", 14, DriftTable_path_XY +"DriftTable.njt");
+setResult("Setting", 14, "Save RAM");
+setResult("Value", 14, ram_conservative_mode);
 
-setResult("Setting", 15, "z-drift table path");
-setResult("Value", 15, DriftTable_path_Z +"DriftTable.njt");
+setResult("Setting", 15, "xy-drift table path");
+setResult("Value", 15, DriftTable_path_XY +"DriftTable.njt");
+
+setResult("Setting", 16, "z-drift table path");
+setResult("Value", 16, DriftTable_path_Z +"DriftTable.njt");
 
 saveAs("Results", settings_file_path);
 //run("Close");
@@ -117,12 +121,12 @@ thisTitle = getTitle();
 if (XY_registration){
 	// make projection
 	getDimensions(width, height, channels, slices, frames);
-	run("Z Project...", "projection=["+projection_type+"] all");
-	rename(projection_type+" projection_"+filename_no_extension);
+	run("Z Project...", "projection=["+projection_type_xy+"] all");
+	rename(projection_type_xy+" projection_"+filename_no_extension);
 	//setBatchMode("show");
 
 	//path to drift table moved up
-	//DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type+"_xy_"; //added xy in file name /JP
+	//DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_xy+"_xy_"; //added xy in file name /JP
 	IJ.log(DriftTable_path_XY);
 	
 	//estimate x-y drift
@@ -220,14 +224,14 @@ if (z_registration) {
 	
 	//======================================================================
 	// ----- Estimating the z correction  from the resliced projection -----
-	run("Z Project...", "projection=["+projection_type+"] all");
-	rename(projection_type+" "+reslice_mode+" projection_"+filename_no_extension);
+	run("Z Project...", "projection=["+projection_type_z+"] all");
+	rename(projection_type_z+" "+reslice_mode+" projection_"+filename_no_extension);
 	setBatchMode("show");
 	
 	run("Scale...", "x=1.0 y="+scale_factor+" z=1.0 width="+width+" height="+(scale_factor*width)+" depth="+frames+" interpolation=Bicubic average process create");
 
 	//path to drift table moved up
-	//DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type+"-"+reslice_mode+"_z_"; //z added to the name
+	//DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_"; //z added to the name
 	IJ.log(DriftTable_path_Z);
 	
 	run("Estimate Drift", "time_z max_z reference_z show_drift_plot apply choose=["+DriftTable_path_Z+"]"); //added Z to the dfrist table path name
@@ -244,11 +248,11 @@ if (z_registration) {
 	
 	selectWindow("DriftCorrOutput");
 	run("Scale...", "x=1.0 y="+(1/scale_factor)+" z=1.0 width="+width+" height="+height+" depth="+frames+" interpolation=Bicubic average process create");
-	rename("DriftCorrected_"+projection_type+" "+reslice_mode+" projection_"+filename_no_extension);
+	rename("DriftCorrected_"+projection_type_z+" "+reslice_mode+" projection_"+filename_no_extension);
 	
 	//edits drift tabel so that only z drift is saved
 	run("Open NanoJ Table (NJT)...", "load=["+DriftTable_path_Z+"DriftTable.njt]");
-	TableName = filename_no_extension+"-"+projection_type+"-"+reslice_mode+"_z_DriftTable.njt";
+	TableName = filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_DriftTable.njt";
 	Table.rename(TableName, "Results");
 	for (i = 0; i < nResults; i++) {
 		setResult("X-Drift (pixels)", i, 0);
