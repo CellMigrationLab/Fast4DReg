@@ -92,6 +92,10 @@ Windows might not have OpenCL installed. If you experience Fiji crashing without
 
 Make sure not to move the drift table from the results folder as the path to the drift table is hardcoded to the settings.csv file. 
 
+**Result images are black**
+
+Try disabling time averaging (1).
+
 
 # Contributors
 
