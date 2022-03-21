@@ -1,6 +1,7 @@
 //----------
 // 2021-11-10 Romain F. Laine, romain.cauk@gmail.com
 // Add synthetic 3D drift to a multicolor 3D dataset
+// Edited by Joanna Pylvänäinen
 //----------
 
 //Macro to generate drifting data:
