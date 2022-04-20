@@ -109,7 +109,23 @@ t_start = getTime();
 //open file
 filename_no_extension = File.getNameWithoutExtension(my_file_path);
 IJ.log("My file path: " + my_file_path);
-run("TIFF Virtual Stack...", "open="+my_file_path);
+
+//run("TIFF Virtual Stack...", "open="+my_file_path); #here with virtual tiff
+
+options = "open=" + my_file_path + " autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
+run("Bio-Formats", options);
+
+// study the image a bit and close if dimentions are wrong
+
+getDimensions(width, height, channels, slices, frames);
+print(channels);
+
+if (channels > 1)  {
+	
+	waitForUser("Please use one channel images");
+	exit();
+	
+}
 
 setBatchMode(true); 
 thisTitle = getTitle();
