@@ -120,14 +120,13 @@ run("Bio-Formats", options);
 // study the image a bit and close if dimentions are wrong
 
 getDimensions(width, height, channels, slices, frames);
-print(channels);
+print(width, height, channels, slices, frames);
 
-if (channels > 1)  {
-	
-	waitForUser("Please use one channel images");
-	exit();
-	
-}
+//swap channels to time	
+run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
+
+getDimensions(width, height, channels, slices, frames);
+print(width, height, channels, slices, frames);
 
 setBatchMode(true); 
 thisTitle = getTitle();
@@ -209,7 +208,9 @@ if (XY_registration){
 	makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
 	run("Crop");
 	}
-
+	//swap back to stack
+	run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
+	
 	// Save intermediate file xy-correct //JP 	 
 	saveAs("Tiff", Corrected_path_xy);
 	close("*");
@@ -226,8 +227,10 @@ if (z_registration) {
 	if (!XY_registration){
 		options = "open=" + my_file_path + " autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
 		run("Bio-Formats", options);
+		run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 	} else {
 		run("TIFF Virtual Stack...", "open="+Corrected_path_xy+".tif");
+		run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 	}
 	
 	// ----- Reslicing for z-projection estimation-----	
@@ -375,7 +378,12 @@ if (reslice_mode == "Left"){
 	run("Flip Vertically", "stack");
 	run("Rotate 90 Degrees Right");
 }
-	
+
+//reorder back to two channel image	
+run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
+getDimensions(width, height, channels, slices, frames);
+print(width, height, channels, slices, frames);
+		
 //save files here
 if (!XY_registration) {
 	rename(filename_no_extension+"_zCorrected"); 
