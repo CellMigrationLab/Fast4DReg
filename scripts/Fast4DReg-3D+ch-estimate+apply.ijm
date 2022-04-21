@@ -125,9 +125,6 @@ print(width, height, channels, slices, frames);
 //swap channels to time	
 run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 
-getDimensions(width, height, channels, slices, frames);
-print(width, height, channels, slices, frames);
-
 setBatchMode(true); 
 thisTitle = getTitle();
 

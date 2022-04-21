@@ -125,11 +125,6 @@ filename_no_extension = File.getNameWithoutExtension(my_file_path);
 //swap channels to time 	
 run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 
-getDimensions(width, height, channels, slices, frames);
-print(width, height, channels, slices, frames);
-
-waitForUser;
-
 setBatchMode(true); 
 
 thisTitle = getTitle();
