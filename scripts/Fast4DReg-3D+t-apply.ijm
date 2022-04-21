@@ -38,7 +38,8 @@ t_start = getTime();
 filename_no_extension = File.getNameWithoutExtension(my_file_path);
 IJ.log("File name: " + filename_no_extension);
 
-run("TIFF Virtual Stack...", "open="+my_file_path);
+options = "open=" + my_file_path + " autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
+run("Bio-Formats", options);
 
 setBatchMode(true); 
 
@@ -109,7 +110,8 @@ filename_no_extension = File.getNameWithoutExtension(my_file_path);
 
 // ----- opening the correct file-----	
 	if (!XY_registration){
-		run("TIFF Virtual Stack...", "open="+my_file_path);
+		options = "open=" + my_file_path + " autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
+		run("Bio-Formats", options);
 	} else {
 		run("TIFF Virtual Stack...", "open="+Corrected_path_xy+".tif");
 	}
