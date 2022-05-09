@@ -19,7 +19,7 @@ In images with two channels, the channels need to be split and the drift is firs
 
 # Dependencies
 
-Fast4DReg requires the NanoJ-Core plugin, which can be installed through Fiji update site: open ImageJ and select “Update” in the “Help”-menu.
+Fast4DReg requires the NanoJ-Core plugin and Bioformats, which can both be installed through Fiji update site: open ImageJ and select “Update” in the “Help”-menu.
 
 
 # Step-by-step walkthrough
