@@ -11,7 +11,7 @@ run("Collect Garbage");
 #@ boolean (label = "<html><b>xy-drift correction</b></html>") XY_registration ; 
 #@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_xy ;
 
-#@ Integer (label="Time averaging (default 100, 1 - disables)", min=1, max=100, style="spinner") time_xy ;
+#@ Integer (label="Time averaging (default: 100, 1 - disables)", min=1, max=100, style="spinner") time_xy ;
 
 #@ Integer (label="Maximum expected drift (pixels, 0 - auto)", min=0, max=auto, style="spinner") max_xy ;
 
