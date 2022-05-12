@@ -141,7 +141,7 @@ if (XY_registration){
 	IJ.log("xy-drift table path: " + DriftTable_path_XY);
 	
 	//estimate x-y drift
-	run("Estimate Drift", "time=time_xy max=max_xy reference=reference_xy show_drift_plot apply choose=["+DriftTable_path_XY+"]");
+	run("Estimate Drift", "time="+time_xy+" max="+max_xy+" reference=["+reference_xy+"] show_drift_plot apply choose=["+DriftTable_path_XY+"]");
 	rename("DriftCorrOutput_XY");
 
 	//save drift plots
@@ -249,7 +249,7 @@ if (z_registration) {
 
 	IJ.log("z-drift table path: " + DriftTable_path_Z);
 	
-	run("Estimate Drift", "time=time_z max=max_z reference=reference_z show_drift_plot apply choose=["+DriftTable_path_Z+"]");
+	run("Estimate Drift", "time="+time_z+" max="+max_z+" reference=["+reference_z+"] show_drift_plot apply choose=["+DriftTable_path_Z+"]");
 	rename("DriftCorrOutput");
 	
 	selectWindow("Drift-X");
