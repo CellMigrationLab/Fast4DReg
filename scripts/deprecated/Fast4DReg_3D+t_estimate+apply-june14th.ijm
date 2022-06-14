@@ -3,10 +3,6 @@ run("Close All");
 print("\\Clear");
 run("Collect Garbage");
 
-
-// give experiment number
-#@ Integer (label="Experiment number", value=001, style="format:000") exp_nro ;
-
 // select file to be corrected
 #@ File (label="Select the file to be corrected", style="open") my_file_path ;
 
@@ -45,36 +41,11 @@ run("Collect Garbage");
 
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint4;
 
-
-// get time stamp
-
-MonthNames = newArray("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");  
-getDateAndTime(year, month, week, day, hour, min, sec, msec);
-print("----");  
-print(year+"-"+MonthNames[month]+"-"+day+"-"+IJ.pad(exp_nro, 3));  
-
-year = "" + year; //converts year to string
-timeStamp = year+"-"+MonthNames[month]+"-"+day+"-"+IJ.pad(exp_nro, 3);
-
-print(timeStamp);
-
-
 //set file paths
 filename_no_extension = File.getNameWithoutExtension(my_file_path);
-
-results = File.getDirectory(my_file_path)+filename_no_extension+"_"+timeStamp+File.separator;
-File.makeDirectory(results);
-
-settings_file_path = results+filename_no_extension+"_settings.csv"; 
-DriftTable_path_XY = results+filename_no_extension+"-"+projection_type_xy+"_xy_";
-DriftTable_path_Z = results+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_";
-
-
-//settings_file_path = File.getDirectory(my_file_path)+filename_no_extension+"_settings.csv"; 
-//DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_xy+"_xy_";
-//DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_";
-//
-
+settings_file_path = File.getDirectory(my_file_path)+filename_no_extension+"_settings.csv"; 
+DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_xy+"_xy_";
+DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_";
 
 // create a settings table and set columns
 setResult("Setting", 0, "File Name");
@@ -128,10 +99,6 @@ setResult("Value", 15, DriftTable_path_XY +"DriftTable.njt");
 setResult("Setting", 16, "z-drift table path");
 setResult("Value", 16, DriftTable_path_Z +"DriftTable.njt");
 
-setResult("Setting", 17, "results path");
-setResult("Value", 17, results);
-
-
 saveAs("Results", settings_file_path);
 
 close("Results");
@@ -183,10 +150,10 @@ if (XY_registration){
 
 	//save drift plots
 	selectWindow("Drift-X");
-	saveAs("Tiff", results+"_Drift-plot-X");
+	saveAs("Tiff", my_file_path+"_Drift-plot-X");
 
 	selectWindow("Drift-Y");
-	saveAs("Tiff", results+"_Drift-plot-Y");
+	saveAs("Tiff", my_file_path+"_Drift-plot-Y");
 
 // ----- Applying the xy-correction from the resliced projection -----
 	IJ.log("--------------------------------");
@@ -220,7 +187,7 @@ if (XY_registration){
 	
 	run("Enhance Contrast", "saturated=0.35");
 	rename(filename_no_extension+"_xyCorrected");
-	Corrected_path_xy = results+filename_no_extension+"_xyCorrected";
+	Corrected_path_xy = File.getDirectory(my_file_path)+filename_no_extension+"_xyCorrected";
 	IJ.log("Path xy-corrected: " + Corrected_path_xy);
 
 // crops image when doing xy-correction AND if z-estimatin is performed	 
@@ -292,7 +259,7 @@ if (z_registration) {
 	selectWindow("Drift-Y");
 	rename("Drift-Z");
 	Plot.setXYLabels("time-points", "z-drift (px)");
-	saveAs("Tiff", results+"_Drift-plot-Z");
+	saveAs("Tiff", my_file_path+"_Drift-plot-Z");
 	//setBatchMode("show");
 	
 	selectWindow("DriftCorrOutput");
@@ -413,11 +380,11 @@ if (reslice_mode == "Left"){
 //save files here
 if (!XY_registration) {
 	rename(filename_no_extension+"_zCorrected"); 
-	Corrected_path_z = results+filename_no_extension+"_zCorrected"; 
+	Corrected_path_z = File.getDirectory(my_file_path)+filename_no_extension+"_zCorrected"; 
 	saveAs("Tiff", Corrected_path_z);
 	} else {
 	rename(filename_no_extension+"_xyzCorrected");
-	Corrected_path_xyz = results+filename_no_extension+"_xyzCorrected";
+	Corrected_path_xyz = File.getDirectory(my_file_path)+filename_no_extension+"_xyzCorrected";
 	saveAs("Tiff", Corrected_path_xyz);  
 	}   
 
