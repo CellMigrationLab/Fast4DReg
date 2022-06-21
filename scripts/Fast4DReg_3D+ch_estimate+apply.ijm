@@ -44,6 +44,7 @@ run("Collect Garbage");
 
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint4;
 
+
 // get time stamp
 
 MonthNames = newArray("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");  
@@ -66,6 +67,7 @@ File.makeDirectory(results);
 settings_file_path = results+filename_no_extension+"_settings.csv"; 
 DriftTable_path_XY = results+filename_no_extension+"-"+projection_type_xy+"_xy_";
 DriftTable_path_Z = results+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_";
+
 
 // create a settings table and set columns
 setResult("Setting", 0, "File Name");
@@ -118,6 +120,9 @@ setResult("Value", 15, DriftTable_path_XY +"DriftTable.njt");
 
 setResult("Setting", 16, "z-drift table path");
 setResult("Value", 16, DriftTable_path_Z +"DriftTable.njt");
+
+setResult("Setting", 17, "results path");
+setResult("Value", 17, results);
 
 saveAs("Results", settings_file_path);
 

@@ -24,6 +24,7 @@ extend_stack_to_fit = Table.getString("Value",13);
 ram_conservative_mode = Table.getString("Value",14);
 DriftTable_path_XY = Table.getString("Value",15);
 DriftTable_path_Z = Table.getString("Value",16);
+results_path = Table.getString("Value",17);
 
 run("Close");
 
@@ -75,7 +76,7 @@ run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="
 
 run("Enhance Contrast", "saturated=0.35");
 rename(filename_no_extension+"_xyCorrected");
-Corrected_path_xy = File.getDirectory(my_file_path)+filename_no_extension+"_xyCorrected"; 
+Corrected_path_xy = results_path+filename_no_extension+"_xyCorrected"; 
 IJ.log("xy_corrected_image_path: " + Corrected_path_xy);
 
 if (crop_output){
@@ -235,12 +236,12 @@ run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames
 //save files here
 if (!XY_registration) {
 	rename(filename_no_extension+"_zCorrected"); 
-	Corrected_path_z = File.getDirectory(my_file_path)+filename_no_extension+"_zCorrected"; 
+	Corrected_path_z = results_path+filename_no_extension+"_zCorrected"; 
 	saveAs("Tiff", Corrected_path_z);
 	IJ.log("z_corrected_image_path: " + Corrected_path_z);
 	} else {
 	rename(filename_no_extension+"_xyzCorrected");
-	Corrected_path_xyz = File.getDirectory(my_file_path)+filename_no_extension+"_xyzCorrected";
+	Corrected_path_xyz = results_path+filename_no_extension+"_xyzCorrected";
 	saveAs("Tiff", Corrected_path_xyz);
 	IJ.log("xyz_corrected_image_path: " + Corrected_path_xyz);
 	}   

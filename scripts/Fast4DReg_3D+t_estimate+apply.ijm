@@ -3,7 +3,6 @@ run("Close All");
 print("\\Clear");
 run("Collect Garbage");
 
-
 // give experiment number
 #@ Integer (label="Experiment number", value=001, style="format:000") exp_nro ;
 
@@ -70,12 +69,6 @@ DriftTable_path_XY = results+filename_no_extension+"-"+projection_type_xy+"_xy_"
 DriftTable_path_Z = results+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_";
 
 
-//settings_file_path = File.getDirectory(my_file_path)+filename_no_extension+"_settings.csv"; 
-//DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_xy+"_xy_";
-//DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_";
-//
-
-
 // create a settings table and set columns
 setResult("Setting", 0, "File Name");
 setResult("Value", 0, filename_no_extension);
@@ -130,7 +123,6 @@ setResult("Value", 16, DriftTable_path_Z +"DriftTable.njt");
 
 setResult("Setting", 17, "results path");
 setResult("Value", 17, results);
-
 
 saveAs("Results", settings_file_path);
 
@@ -187,6 +179,7 @@ if (XY_registration){
 
 	selectWindow("Drift-Y");
 	saveAs("Tiff", results+"_Drift-plot-Y");
+
 
 // ----- Applying the xy-correction from the resliced projection -----
 	IJ.log("--------------------------------");
