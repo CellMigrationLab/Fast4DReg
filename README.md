@@ -42,27 +42,35 @@ Running the script:
 **xy-drift correction:** if you want to correct for xy-drift, tick the xy-drift correction box.
 
 **Projection type:** Select projection type used for xy-drift estimation (maximum or average intensity).
+
 **Time averaging:** This sets the number of frames to average together to make coarser timepoints on which the
 cross-correlation analysis will be run to calculate drift. Setting this value to 1 will calculate
 straight frame-to-frame cross-correlations and while this should capture drift very accurately, it
 will also be very susceptible to noise. Conversely, setting this value high will average out noise
 but will also give a lower sample of the drift (which is then interpolated).
+
 **Maximum expected drift:** This refers to the maximum expected drift between the first frame of the dataset and the last
 frame of the dataset in units of pixels. Setting this to 0 will allow the algorithm to automatically
 determine the drift without any limitations. It is only really worth changing this value from 0 if
 running the algorithm gives incorrect results with large jumps in estimated drift.
+
 **Reference frame:** If this is set to ‘first frame (default, better for fixed)’ then every averaged group of frames will be
 compared to the first average group of frames to calculate drift. If this is set to ‘previous frame
 (better for live)’ then every averaged group of frames will be compared to the previous averaged
 group of frames. For static samples, it is best to
 compare to the first frame, and for live samples where there may be slow scale drift overlaying
 the faster scale sample motion, it is better to compare to the previous frame.
+
 **Crop output:** Crop output will crop out the black frame created by the image moving. This will be performed on default if continued to z-correction.
+
 **z-drift correction:** If you want to correct for z-drift, tick the z-drift correction box.
+
 **Reslice mode:** Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
+
 **Projection type:** Select projection type used for z-drift estimation (maximum or average intensity) 
-    - next three - see above
+
 **Extend stack to fit:** Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved.
+
 **Save RAM:** If ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
   
 2. Click ok. The script will run.
