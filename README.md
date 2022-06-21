@@ -79,8 +79,8 @@ the faster scale sample motion, it is better to compare to the previous frame.
 *Figure 3: Apply user interface*
 
 
-**Select the path to the file to be corrected:** Navigate to your image to be corrected here.
-**Select the settings file (csv.):**. Navigate to your settings file (called settings.csv).
+- **Select the path to the file to be corrected:** Navigate to your image to be corrected here.
+- **Select the settings file (csv.):**. Navigate to your settings file (called settings.csv).
 
 2. Click ok. The corrected image will be saved to the same folder with the settingds file.
 
