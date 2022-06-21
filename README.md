@@ -33,6 +33,7 @@ Running the script:
 1. Open the "estimate-drift" script and click run. User interface opens.
 
 ![image](images/Fast4DregUI.png)
+
 *Figure 2: Estimte and apply user interface*
 
 2. In the user interface
