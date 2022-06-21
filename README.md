@@ -25,45 +25,50 @@ Fast4DReg requires the NanoJ-Core plugin and Bioformats, which can both be insta
 # Step-by-step walkthrough
 
 **Estimate and apply drift**
-1. Create a folder with your image to be corrected in it. If you have multiple channels they can all be in the same folder as separated files.
-2. Open the "estimate-drift" script and click run. User interface opens.
+
+Before starting:
+1. Prepare your image to have one channel. If you have multiple channels they can all be in the same folder as separate files.
+
+Running the script:
+1. Open the "estimate-drift" script and click run. User interface opens.
 
 ![image](images/Fast4DregUI.png)
 *Figure 2: Estimte and apply user interface*
 
-3. In the user interface
-     - Set the path to the file to be corrected
-     - if you want to correct for xy-drift, tick the xy-drift correction box
-     - Select projection type used for xy-drift estimation (maximum or average intensity) 
-     - This sets the number of frames to average together to make coarser timepoints on which the
+2. In the user interface
+**Experiment number:**
+**Select the path to the file to be corrected:** navigate to your image to be corrected here
+**xy-drift correction:** if you want to correct for xy-drift, tick the xy-drift correction box
+**Projection type:** Select projection type used for xy-drift estimation (maximum or average intensity) 
+**Time averaging:** This sets the number of frames to average together to make coarser timepoints on which the
 cross-correlation analysis will be run to calculate drift. Setting this value to 1 will calculate
 straight frame-to-frame cross-correlations and while this should capture drift very accurately, it
 will also be very susceptible to noise. Conversely, setting this value high will average out noise
 but will also give a lower sample of the drift (which is then interpolated).
-     - This refers to the maximum expected drift between the first frame of the dataset and the last
+**Maximum expected drift:** This refers to the maximum expected drift between the first frame of the dataset and the last
 frame of the dataset in units of pixels. Setting this to 0 will allow the algorithm to automatically
 determine the drift without any limitations. It is only really worth changing this value from 0 if
 running the algorithm gives incorrect results with large jumps in estimated drift.
-    - If this is set to ‘first frame (default, better for fixed)’ then every averaged group of frames will be
+**Reference frame:** If this is set to ‘first frame (default, better for fixed)’ then every averaged group of frames will be
 compared to the first average group of frames to calculate drift. If this is set to ‘previous frame
 (better for live)’ then every averaged group of frames will be compared to the previous averaged
 group of frames. For static samples, it is best to
 compare to the first frame, and for live samples where there may be slow scale drift overlaying
 the faster scale sample motion, it is better to compare to the previous frame.
-    - Crop output will crop out the black frame created by the image moving. This will be performed on default if continued to z-correction.
-    - if you want to correct for z-drift, tick the z-drift correction box.
-    - Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
-    - Select projection type used for z-drift estimation (maximum or average intensity) 
+**Crop output:** Crop output will crop out the black frame created by the image moving. This will be performed on default if continued to z-correction.
+**z-drift correction:** If you want to correct for z-drift, tick the z-drift correction box.
+**Reslice mode:** Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
+**Projection type:** Select projection type used for z-drift estimation (maximum or average intensity) 
     - next three - see above
-    - Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved.
-    - Save RAM - if ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
+**Extend stack to fit:** Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved.
+**Save RAM:** If ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
   
-  1. Click ok. The script will run.
-  2. When the script has completed the process, you will have the following files in the same folder as the original image:
+2. Click ok. The script will run.
+3. When the script has completed the process, you will have the following files in a new forlder:
        - corrected images
        - drift plots
        - drift tables
-       - a settings file, you can use to run the script on another channel with identical parameters. 
+       - a settings file, you can use to run the script on another image with identical parameters. 
    
    If you plan to apply the correction to another channel, make sure not to move these files to another folder.
   
@@ -75,9 +80,10 @@ the faster scale sample motion, it is better to compare to the previous frame.
 *Figure 3: Apply user interface*
 
 
-2. Browse to the file that you want to which you want to apply the correction.
-3. Browse to the settings file (called settings.csv)
-4. Click ok. The corrected image will be saved to the same folder as everything else.
+**Select the path to the file to be corrected:** Navigate to your image to be corrected here.
+**Select the settings file (csv.):**. Navigate to your settings file (called settings.csv).
+
+2. Click ok. The corrected image will be saved to the same folder with the settingds file.
 
 Done!
 
