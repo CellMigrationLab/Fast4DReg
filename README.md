@@ -1,5 +1,8 @@
 # Fast4DReg
 
+![example1](https://user-images.githubusercontent.com/74545655/174895500-48bf89f0-3bbe-4073-9dff-b7da828d78ef.gif)
+
+
 # Overview
 
 Fast4DReg is a script built on top of the NanoJ plugin [(Laine et al., 2019)](https://iopscience.iop.org/article/10.1088/1361-6463/ab0261), that can be used for fast drift correction in 3D videos. The script can be used to correct drift in x-, y- and/or z-directions. The correction is based on cross-correlation between projections of time points - making the drift estimation faster than many other correction methods.
