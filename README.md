@@ -37,9 +37,11 @@ Running the script:
 
 2. In the user interface
 **Experiment number:**
-**Select the path to the file to be corrected:** navigate to your image to be corrected here
-**xy-drift correction:** if you want to correct for xy-drift, tick the xy-drift correction box
-**Projection type:** Select projection type used for xy-drift estimation (maximum or average intensity) 
+**Select the path to the file to be corrected:** navigate to your image to be corrected here.
+
+**xy-drift correction:** if you want to correct for xy-drift, tick the xy-drift correction box.
+
+**Projection type:** Select projection type used for xy-drift estimation (maximum or average intensity).
 **Time averaging:** This sets the number of frames to average together to make coarser timepoints on which the
 cross-correlation analysis will be run to calculate drift. Setting this value to 1 will calculate
 straight frame-to-frame cross-correlations and while this should capture drift very accurately, it
