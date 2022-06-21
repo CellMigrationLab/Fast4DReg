@@ -1,87 +1,98 @@
 # Fast4DReg
 
+# Overview
 
-Fast4DReg is a script that can be used for quick drift correction in time-lapse stacks. The script can be used to correct drift in x-, y- and/or z-directions. The correction is based on cross-correlation between projections of time points - making the drift estimation faster than many other correction methods. Fast4DReg uses the NanoJ-Core Fiji plugin.
+Fast4DReg is a script built on top of the NanoJ plugin [(Laine et al., 2019)](https://iopscience.iop.org/article/10.1088/1361-6463/ab0261), that can be used for fast drift correction in 3D videos. The script can be used to correct drift in x-, y- and/or z-directions. The correction is based on cross-correlation between projections of time points - making the drift estimation faster than many other correction methods.
 
-Drift correction workflow
-1. From 3D time series z-projections are created at each time point to create 2D time series. 
-2. NanoJ-Core estimates the linear x-y drift between two images by calculating their cross-correlation matrix (CCM). The location of the peak intensity in the CCM determines the linear shift between the two images. 
-3. Once the drift is estimated, the dataset can be directly corrected frame by frame according to the amount of measured drift. 
-4. Once the images have been corrected the projected images are built back to 3D time series.
-5. Each time point of the x-y -corrected 3D time series is projected along the y- or z-axis to create another 2D time series. 
-6. NanoJ-Core estimates the linear z drift between two images by calculating their cross-correlation matrix (CCM). The location of the peak intensity in the CCM determines the linear shift between the two images. 
-7. Once the z-drift is estimated, the dataset can be directly corrected frame by frame according to the amount of measured drift and built back to the 3D time series.
 
-In images with two channels, the channels need to be split and the drift is first estimated one of the channels. The drift correction can then be applied to the second (or more) channels.
+### Drift correction workflow
+**xy-correction**
+1. First Fast4DReg creates intensity lateral projections (average or maximum) at each time point to create 2D videos. 
+2. Second, Fast4DReg uses the NanoJ-Core 2D drift correction algorithm to estimate the linear x-y drift between two images by calculating their cross-correlation matrix (CCM). The location of the peak intensity in the CCM determines the linear shift between the two images. Depending on the data, either the first frame or the previous frame of the raw data can be set as the reference frame. 
+3. Once the drift is estimated, the dataset can be directly corrected frame by frame according to the amount of estimated drift. 
+
+**z-correction**
+
+4. Fast4DReg creates lateral intensity projections (average or maximum) at each time point to create 2D videos along the y- or z-axis. 
+5. Fast4DReg uses the NanoJ-Core as in step 2.
+6. Once the z-drift is estimated, the dataset can be directly corrected frame by frame according to the amount of estimated drift.
+
+If using multichannel images, the channels need to be split. The drift will be estimated according to the channel that has more stable structures (for example endothelium instead of migrating cancer cells). The drift correction can then be applied to the second (or more) channels.
 
 ![image](images/methodDescription.png)
 *Figure 1: Fast4DReg workflow. 3D time stack images can ce corrected for drift in xy-, z- and/or xyz-directions.*
 
-# Dependencies
-
-Fast4DReg requires the NanoJ-Core plugin and Bioformats, which can both be installed through Fiji update site: open ImageJ and select “Update” in the “Help”-menu.
-
 
 # Step-by-step walkthrough
 
-**Estimate and apply drift**
-1. Create a folder with your image to be corrected in it. If you have multiple channels they can all be in the same folder as separated files.
-2. Open the "estimate-drift" script and click run. User interface opens.
+### Estimate and apply drift
+
+**Before starting**
+
+Prepare your image to have one channel. If you have multiple channels they can all be in the same folder as separate files.
+
+**Running the script**
+1. Open the "estimate-drift" script and click run. The user interface opens.
 
 ![image](images/Fast4DregUI.png)
-*Figure 2: Estimte and apply user interface*
 
-3. In the user interface
-     - Set the path to the file to be corrected
-     - if you want to correct for xy-drift, tick the xy-drift correction box
-     - Select projection type used for xy-drift estimation (maximum or average intensity) 
-     - This sets the number of frames to average together to make coarser timepoints on which the
+*Figure 2: Estimate and apply user interface*
+
+2. In the user interface
+- **Experiment number:** Will be used for the output folder identifier.
+- **Select the path to the file to be corrected:** navigate to your image to be corrected here.
+- **xy-drift correction:** if you want to correct for xy-drift, tick the xy-drift correction box.
+- **Projection type:** Select the projection type used for xy-drift estimation (maximum or average intensity).
+- **Time averaging:** This sets the number of frames to average together to make coarser time points on which the
 cross-correlation analysis will be run to calculate drift. Setting this value to 1 will calculate
 straight frame-to-frame cross-correlations and while this should capture drift very accurately, it
 will also be very susceptible to noise. Conversely, setting this value high will average out noise
 but will also give a lower sample of the drift (which is then interpolated).
-     - This refers to the maximum expected drift between the first frame of the dataset and the last
+- **Maximum expected drift:** This refers to the maximum expected drift between the first frame of the dataset and the last
 frame of the dataset in units of pixels. Setting this to 0 will allow the algorithm to automatically
 determine the drift without any limitations. It is only really worth changing this value from 0 if
 running the algorithm gives incorrect results with large jumps in estimated drift.
-    - If this is set to ‘first frame (default, better for fixed)’ then every averaged group of frames will be
+- **Reference frame:** If this is set to ‘first frame (default, better for fixed)’ then every averaged group of frames will be
 compared to the first average group of frames to calculate drift. If this is set to ‘previous frame
 (better for live)’ then every averaged group of frames will be compared to the previous averaged
 group of frames. For static samples, it is best to
 compare to the first frame, and for live samples where there may be slow scale drift overlaying
 the faster scale sample motion, it is better to compare to the previous frame.
-    - Crop output will crop out the black frame created by the image moving. This will be performed on default if continued to z-correction.
-    - if you want to correct for z-drift, tick the z-drift correction box.
-    - Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
-    - Select projection type used for z-drift estimation (maximum or average intensity) 
-    - next three - see above
-    - Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved.
-    - Save RAM - if ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
+- **Crop output:** Crop output will crop out the black frame created by the image moving. This will be performed on default if continued to z-correction.
+- **z-drift correction:** If you want to correct for z-drift, tick the z-drift correction box.
+- **Reslice mode:** Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
+- **Projection type:** Select the projection type used for z-drift estimation (maximum or average intensity) 
+- **Extend stack to fit:** Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved.
+- **Save RAM:** If ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
   
-  1. Click ok. The script will run.
-  2. When the script has completed the process, you will have the following files in the same folder as the original image:
+3. Click ok. The script will run.
+4. When the script has completed the process, you will have the following files in a new folder:
        - corrected images
        - drift plots
        - drift tables
-       - a settings file, you can use to run the script on another channel with identical parameters. 
+       - a settings file, you can use to run the script on another image with identical parameters. 
    
+   The folder will have an unique identifyer: *fileName + date + experiment number*. 
    If you plan to apply the correction to another channel, make sure not to move these files to another folder.
   
-**Apply drift**
+### Apply drift
 
-1. Open the "apply" script and click run. User interface opens.  
+1. Open the "apply" script and click run. The user interface opens.  
 
 ![image](images/applyUI.png)
 *Figure 3: Apply user interface*
 
 
-2. Browse to the file that you want to which you want to apply the correction.
-3. Browse to the settings file (called settings.csv)
-4. Click ok. The corrected image will be saved to the same folder as everything else.
+- **Select the path to the file to be corrected:** Navigate to your image to be corrected here.
+- **Select the settings file (csv.):**. Navigate to your settings file (called settings.csv).
+
+2. Click ok. The corrected image will be saved to the same folder with the settings file.
 
 Done!
 
+# Dependencies
 
+Fast4DReg requires the NanoJ-Core plugin and Bioformats, which can both be installed through the Fiji update site: open ImageJ and select “Update” in the “Help”-menu.
 
 # Known issues
 
