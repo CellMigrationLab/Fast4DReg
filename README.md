@@ -51,7 +51,7 @@ If using multichannel images, the channels need to be split. The drift will be e
 Fast4DReg requires the **NanoJ-Core** plugin and **Bioformats**, which can both be installed through the Fiji update site: 
 - Open ImageJ 
 - Navigate to *Help -> Update -> Manage update sites*
-- Select NanoJ-Core and Bioformats.
+- Select NanoJ-Core and Bio-formats.
 
 ![image](https://user-images.githubusercontent.com/74545655/175066471-2de2f761-7991-43ab-aa0d-8ca786ec626f.png)
 
