@@ -5,7 +5,7 @@
 
 # Overview
 
-Fast4DReg is a script built on top of the NanoJ plugin [(Laine et al., 2019)](https://iopscience.iop.org/article/10.1088/1361-6463/ab0261), that can be used for fast drift correction in 3D videos. The script can be used to correct drift in x-, y- and/or z-directions. The correction is based on cross-correlation between projections of time points - making the drift estimation faster than many other correction methods.
+Fast4DReg is a Fiji macro for drift correction in 3D video and is able to correct drift in all x-, y- and/or z-directions. Fast4DReg creates intensity projections along both axes and estimates their drift using the NanoJ-Core [(Laine et al., 2019)](https://iopscience.iop.org/article/10.1088/1361-6463/ab0261) cross-correlation based drift correction, and then translates the 3D video frame by frame (Figure 1). Additionally, Fast4DReg can be used for aligning multichannel 3D images which is particularly useful for instruments that suffer from a misalignment of channels. 
 
 
 ### Drift correction workflow
@@ -23,7 +23,7 @@ Fast4DReg is a script built on top of the NanoJ plugin [(Laine et al., 2019)](ht
 If using multichannel images, the channels need to be split. The drift will be estimated according to the channel that has more stable structures (for example endothelium instead of migrating cancer cells). The drift correction can then be applied to the second (or more) channels.
 
 ![image](images/methodDescription.png)
-*Figure 1: Fast4DReg workflow. 3D time stack images can ce corrected for drift in xy-, z- and/or xyz-directions.*
+***Figure 1: Fast4DReg pipeline.*** *Fast4DReg corrects for drift in x-y direction by first creating intensity projections to create 2D videos. Then it estimates the linear x-y drift between two images by calculating their cross-correlation matrix and applying the correction to the stack. To correct the drift in the z-direction Fast4DReg creates frontal intensity and corrects the drift as described above. Lateral and axial drift corrections can also be used independently. Fast4DReg outputs a folder containing the corrected images, drift plots, a drift table and a settings file that can be applied to correct another image with the same settings.*
 
 
 # Installation
