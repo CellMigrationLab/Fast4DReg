@@ -9,7 +9,7 @@ Fast4DReg is a Fiji macro for drift correction in 3D video and is able to correc
 
 Fast4DReg consists of four scripts.
 
-### Fast4DReg scripts:
+### Fast4DReg scripts
 
 - **time_estimate+apply:** This script estimated drift in a 3D video and applies the correction to the same dataset. The script will also output a *settings.csv* file with relevant script parameters and file paths. This file can be use to correct a similar drift in another dataset, for example another channel. 
 
