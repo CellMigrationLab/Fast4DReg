@@ -38,7 +38,7 @@ run("Collect Garbage");
 #@ String (label = "Reference frame", choices={"first frame (default, better for fixed)" , "previous frame (better for live)"}, style="listBox") reference_xy ;
 
 #@ boolean (label = "Crop output") crop_output ; 
-#@ String  (value="<html><i>Note, when continued to z-drift correction, cropping output will be enabled automatically.</i></html>", visibility="MESSAGE") hint2;
+#@ String  (value="<html><i> Cropping output will be enabled automatically when continuing to z-correction.</i></html>", visibility="MESSAGE") hint2;
 
 
 //settings for z-drift correction
