@@ -93,6 +93,12 @@ the faster scale sample motion, it is better to compare to the previous frame.
 
 Done!
 
+# Installation
+
+1. Download the Fat4DReg folder from this repository.
+2. Move the folder to Fiji plugins folder
+3. You will find the Fast4DReg in the plugins pull down menu.
+
 # Dependencies
 
 Fast4DReg requires the NanoJ-Core plugin and Bioformats, which can both be installed through the Fiji update site: open ImageJ and select “Update” in the “Help”-menu.
