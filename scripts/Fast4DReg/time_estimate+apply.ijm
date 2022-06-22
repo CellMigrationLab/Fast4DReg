@@ -1,3 +1,20 @@
+/*
+Fast4DReg is a Fiji macro for drift correction of 3D videos or 
+channel alignment in 3D multichannel image stacks. Drift or 
+misalignment can be corrected in all x-, y- and/or z-directions. 
+
+Time estimate+apply script estimates the drift between frames in 
+a 3D video and applied the correction to the same dataset. 
+
+Fast4DReg is dependent on the NanoJ-Core plugin and Bioformats.
+If you use this script in your research, please cite our pre-print and 
+Laine, R. F. Et al 2019. NanoJ: a high-performance open-source super-resolution 
+microscopy toolbox, doi: 10.1088/1361-6463/ab0261.
+
+Authors: Joanna W Pylvänäinen and Romain F Laine
+version: 1.0 (preprint)
+Licence: MIT
+*/
 
 run("Close All");
 print("\\Clear");
