@@ -26,6 +26,18 @@ If using multichannel images, the channels need to be split. The drift will be e
 *Figure 1: Fast4DReg workflow. 3D time stack images can ce corrected for drift in xy-, z- and/or xyz-directions.*
 
 
+# Installation
+
+### Fast4DReg
+
+1. Download the Fast4DReg folder from this repository.
+2. Move the folder to the Fiji plugins folder.
+3. You will find the Fast4DReg in the plugins pull down menu.
+
+### Dependencies
+
+Fast4DReg requires the NanoJ-Core plugin and Bioformats, which can both be installed through the Fiji update site: open ImageJ and select “Update” in the “Help”-menu.
+
 # Step-by-step walkthrough
 
 ### Estimate and apply drift
@@ -93,15 +105,7 @@ the faster scale sample motion, it is better to compare to the previous frame.
 
 Done!
 
-# Installation
 
-1. Download the Fat4DReg folder from this repository.
-2. Move the folder to Fiji plugins folder
-3. You will find the Fast4DReg in the plugins pull down menu.
-
-# Dependencies
-
-Fast4DReg requires the NanoJ-Core plugin and Bioformats, which can both be installed through the Fiji update site: open ImageJ and select “Update” in the “Help”-menu.
 
 # Known issues
 
