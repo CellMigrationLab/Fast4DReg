@@ -134,4 +134,7 @@ Try disabling time averaging (1).
 
 Laine, R. F., Tosheva, K. L., Gustafsson, N., Gray, R., Almada, P., Albrecht, D., Risa, G. T., Hurtig, F., Lindås, A. C., Baum, B., Mercer, J., Leterrier, C., Pereira, P. M., Culley, S., & Henriques, R. (2019). NanoJ: a high-performance open-source super-resolution microscopy toolbox. Journal of physics D: Applied physics, 52(16), 163001. https://doi.org/10.1088/1361-6463/ab0261
 
+# Change log
+ **220222 Version 1.0 (pre-print)**
+All four scripts have been tested and work well. Ready for pre-print.
 
