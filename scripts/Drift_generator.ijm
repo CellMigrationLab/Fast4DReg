@@ -1,7 +1,7 @@
 //----------
 // 2021-11-10 Romain F. Laine, romain.cauk@gmail.com
 // Add synthetic 3D drift to a multicolor 3D dataset
-// Edited by Joanna Pylvänäinen
+// 2022-08-12 Edited by Joanna Pylvänäinen, joanna.pylvanainen@abo.fi
 //----------
 
 //Macro to generate drifting data:
@@ -10,9 +10,11 @@
 // you can get the GT drifts from the table generated
 // you can add some additional poisson noise as in a real time course (enable/disable) but that's very slow, so I recommend to play with drifts first and only add the noise once you're happy with drifts
 // you'll need RandomJ installed for the Poisson noise to work
-// you can disable the randomness on the drift curves by setting the drift_noise_amplitude to 0 (edited) 
+// you can disable the randomness on the drift curves by setting the drift_noise_amplitude to 0 (edited)
+// you can homogenize background to remove the drfting edge of the original image 
 
 //Current limitations:
+// expects multichannel image
 // it's a bit slow, but it seems to work
 // it loses the color of the channels
 // it does not automatically change to 32-bit (which would be better before applying the translations + interpolations) but it currently keeps the bit depth so that it's easier for memory useage
@@ -40,31 +42,9 @@
 
 #@ Integer (label="Drift noise amplitude", style="spinner") drift_noise_amplitude ;
 
-#@ Integer (label="Remove drifing frame (average bg signal)", style="spinner") remove_frame ;
+#@ Integer (label="Homogenize background signal", style="spinner") remove_frame ;
 
 #@ boolean (label = "Add poisson noise") additional_poisson_noise ; 
-
-
-// ---- User input ----
-//time_points = 25; // number of time points to simulate
-
-// Simulating the drift curves over time as quadratic functions: ¢
-// x_drift(t) = x2*t^2 + x1*t + noise, for instance (but we could use any functions really)
-
-//x2 = 0.1; 
-//x1 = 0.2; 
-
-//y2 = -0.3; 
-//y1 = 1.5; 
-
-//z2 = 0.0;
-//z1 = -0.6;
-
-//drift_noise_amplitude = 0.7;
-//drift_noise_amplitude = 0.1; //original
-//additional_poisson_noise = true;
-
-//file_path = "/Users/jpylvana/Dropbox/Tutkimus-phd/3_PhD/NanoJ-Core/PaperDatasets/1-synteticData/210407aspc1-noDrift-nobg-2channel.tif";
 
 
 
@@ -139,7 +119,6 @@ for (i = 1; i < time_points; i++) {
 	}
 
 	merge_string = merge_string+" create";
-//	print(merge_string);
 	run("Merge Channels...", merge_string);
 
 	run("Concatenate...", "  title=3DD_FullStack keep image1=3DDStack image2=3DD_singleFrame image3=[-- None --]");
