@@ -99,10 +99,6 @@ IJ.log("xy_corrected_image_path: " + Corrected_path_xy);
 
 if (crop_output){
 	minmaxXYdrift = getMinMaxXYFromDriftTable(DriftTable_path_XY);
-//		print(minmaxXYdrift[0]);
-//		print(minmaxXYdrift[1]);
-//		print(minmaxXYdrift[2]);
-//		print(minmaxXYdrift[3]);
 
 	new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
 	new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
@@ -324,8 +320,6 @@ function getMinMaxXYFromDriftTable(DriftTable_path_XY) {
 		if (yDrift > minmaxXYdrift[3]) minmaxXYdrift[3] = yDrift;
 	}
 
-//	minmaxZdrift[0] = floor(minmaxZdrift[0]);
-//	minmaxZdrift[1] = Math.ceil(minmaxZdrift[1]);
 	close("Results");
 
 	return minmaxXYdrift;

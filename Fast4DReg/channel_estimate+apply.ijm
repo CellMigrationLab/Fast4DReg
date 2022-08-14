@@ -42,7 +42,6 @@ run("Collect Garbage");
 
 
 //settings for z-drift correction
-
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint3;
 #@ boolean (label = "<html><b>z-drift correction</b></html>") z_registration ; 
 #@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_z ;
@@ -63,7 +62,6 @@ run("Collect Garbage");
 
 
 // get time stamp
-
 MonthNames = newArray("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");  
 getDateAndTime(year, month, week, day, hour, min, sec, msec);
 print("----");  
@@ -160,9 +158,7 @@ options = "open=" + my_file_path + " autoscale color_mode=Default stack_order=XY
 run("Bio-Formats", options);
 
 // study the image a bit and close if dimentions are wrong
-
 getDimensions(width, height, channels, slices, frames);
-print(width, height, channels, slices, frames);
 
 //swap channels to time	
 run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
@@ -232,11 +228,6 @@ if (XY_registration){
 // crops image when doing xy-correction AND if z-estimatin is performed	 
 	if (crop_output || z_registration) {	
 		minmaxXYdrift = getMinMaxXYFromDriftTable_xy(DriftTable_path_XY+"DriftTable.njt");
-		//print(DriftTable_path_XY+"DriftTable.njt");
-		//print(minmaxXYdrift[0]);
-		//print(minmaxXYdrift[1]);
-		//print(minmaxXYdrift[2]);
-		//print(minmaxXYdrift[3]);
 
 	selectWindow(filename_no_extension+"_xyCorrected");
 	width = getWidth();
@@ -251,7 +242,7 @@ if (XY_registration){
 	//swap back to stack
 	run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 	
-	// Save intermediate file xy-correct //JP 	 
+	// Save intermediate file xy-correct	 
 	saveAs("Tiff", Corrected_path_xy);
 	close("*");
 
@@ -348,7 +339,7 @@ padded_height = height + padding;
 if (!ram_conservative_mode){
 	newImage("DataRescliced_Corrected", "32-bit black", width, padded_height, slices*frames);
 	setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
-	//setBatchMode("show");	
+	
 }
 
 for (i = 0; i < slices; i++) {
@@ -410,7 +401,6 @@ else {
 	selectWindow("AllStarStack");
 }
 
-//setBatchMode("show");
 run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
 getVoxelSize(width, height, depth, unit);
 run("Reslice [/]...", "output="+depth+" start=Top avoid");
