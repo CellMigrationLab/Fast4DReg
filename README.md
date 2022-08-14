@@ -54,9 +54,9 @@ Fast4DReg requires the **NanoJ-Core** plugin and **Bioformats**, which can both 
 - Navigate to *Help -> Update -> Manage update sites*
 - Select NanoJ-Core and Bio-Formats.
 
-![image](https://user-images.githubusercontent.com/74545655/175066471-2de2f761-7991-43ab-aa0d-8ca786ec626f.png)
+![image](images/install-1.png)
 
-![image](https://user-images.githubusercontent.com/74545655/175066678-8a318a29-f652-40e6-b05c-62d4fab4ed3a.png)
+![image](images/install-2.png)
 
 - When selected select *Close* and *Apply changes*. 
 - Restart Fiji.
