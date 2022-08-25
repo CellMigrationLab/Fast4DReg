@@ -156,6 +156,7 @@ Try disabling time averaging (1).
 
 * [Joanna Pylvänäinen](https://twitter.com/JwPylvanainen)
 * [Romain F. Laine](https://twitter.com/LaineBioImaging)
+* [Ricardo Henriques](https://twitter.com/HenriquesLab)
 * [Guillaume Jacquemet](https://twitter.com/guijacquemet)
 
 
