@@ -65,7 +65,6 @@ run("Collect Garbage");
 MonthNames = newArray("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");  
 getDateAndTime(year, month, week, day, hour, min, sec, msec);
 print("----");  
-print(year+"-"+MonthNames[month]+"-"+day+"-"+IJ.pad(exp_nro, 3));  
 
 year = "" + year; //converts year to string
 timeStamp = year+"-"+MonthNames[month]+"-"+day+"-"+IJ.pad(exp_nro, 3);
@@ -152,9 +151,7 @@ t_start = getTime();
 filename_no_extension = File.getNameWithoutExtension(my_file_path);
 IJ.log("My file path: " + my_file_path);
 
-//run("TIFF Virtual Stack...", "open="+my_file_path); //here with virtual tiff
-
-options = "open=" + my_file_path + " autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
+options = "open=[" + my_file_path+ "] autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
 run("Bio-Formats", options);
 
 // study the image a bit and close if dimentions are wrong
@@ -256,11 +253,15 @@ if (z_registration) {
 	
 	// ----- opening the correct file-----	
 	if (!XY_registration){
-		options = "open=" + my_file_path + " autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
+		options = "open=[" + my_file_path+ "] autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
 		run("Bio-Formats", options);
 		run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 	} else {
-		run("TIFF Virtual Stack...", "open="+Corrected_path_xy+".tif");
+		
+		Corrected_image_xy = Corrected_path_xy+".tif";
+		options = "open=[" + Corrected_image_xy + "]";
+		run("TIFF Virtual Stack...", options);
+
 		run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 	}
 	
