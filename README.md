@@ -77,7 +77,7 @@ Fast4DReg requires the **NanoJ-Core** plugin and **Bioformats**, which can both 
 Prepare your image to have one channel. If you have multiple channels they can all be in the same folder as separate files.
 
 **Running the script**
-1. Open the "estimate-drift" script and click run. The user interface opens.
+1. Open the "time_estimate+apply" script and click run. The user interface opens.
 
 ![image](images/Fast4DregUI.png)
 
@@ -117,7 +117,7 @@ the faster scale sample motion, it is better to compare to the previous frame.
        - drift tables
        - a settings file, you can use to run the script on another image with identical parameters. 
    
-   The folder will have an unique identifyer: *fileName + date + experiment number*. 
+   The folder will have an unique identifier: *fileName + date + experiment number*. 
    If you plan to apply the correction to another channel, make sure not to move these files to another folder.
   
 ### Apply drift
