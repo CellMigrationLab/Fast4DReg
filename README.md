@@ -155,6 +155,7 @@ Try disabling time averaging (1).
 # Contributors
 
 * [Joanna Pylvänäinen](https://twitter.com/JwPylvanainen)
+* [Bruno Manuel Santos Saraiva](https://github.com/brunomsaraiva)
 * [Romain F. Laine](https://twitter.com/LaineBioImaging)
 * [Ricardo Henriques](https://twitter.com/HenriquesLab)
 * [Guillaume Jacquemet](https://twitter.com/guijacquemet)
