@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.scijava</groupId>
+        <artifactId>pom-scijava</artifactId>
+        <version>31.1.0</version>
+        <relativePath />
+    </parent>
+
+    <groupId>com.ocb</groupId>
+    <artifactId>Fast4DReg_</artifactId>
+    <version>2.0.0</version>
+
+    <name>Fast4DReg</name>
+    <description>Fast4DReg is a Fiji macro for drift correction in 3D video and is able to correct drift in all x-, y- and/or z-directions</description>
+    <url>https://github.com/guijacquemet/Fast4DReg</url>
+    <inceptionYear>2022</inceptionYear>
+    <organization>
+        <name>My Company</name>
+        <url>https://mycompany.com/</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>GPLv3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <!-- See https://imagej.net/contribute/governance#scijava-team-roles -->
+        <developer>
+            <id>paxcalpt</id>
+            <name>Ricardo Henriques</name>
+            <url>https://henriqueslab.github.io/</url>
+            <roles>
+                <role>founder</role>
+                <role>lead</role>
+                <role>developer</role>
+                <role>debugger</role>
+                <role>reviewer</role>
+                <role>support</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>brunomsaraiva</id>
+            <name>Bruno Saraiva</name>
+            <url>https://henriqueslab.github.io/</url>
+            <roles>
+                <role>developer</role>
+                <role>debugger</role>
+                <role>reviewer</role>
+                <role>support</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Guillaume Jacquemet</name>
+        </contributor>
+        <contributor>
+            <name>Joanna Pylvänäinen</name>
+        </contributor>
+    </contributors>
+
+    <mailingLists>
+        <mailingList>
+            <name>Image.sc Forum</name>
+            <archive>https://forum.image.sc/tag/imagej</archive>
+        </mailingList>
+    </mailingLists>
+
+    <scm>
+        <connection>scm:git:https://github.com/guijacquemet/Fast4DReg</connection>
+        <developerConnection>scm:git:git@github.com/guijacquemet/Fast4DReg</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/guijacquemet/Fast4DReg</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/imagej/example-legacy-plugin/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>None</system>
+    </ciManagement>
+
+    <properties>
+        <package-name>com.ocb.imagej</package-name>
+        <license.licenseName>cc0</license.licenseName>
+        <license.copyrightOwners>Optical Cell Biology Lab - Instituto Gulbenkian de Ciência</license.copyrightOwners>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.wendykierp</groupId>
+            <artifactId>JTransforms</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <!-- any other plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
