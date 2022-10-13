@@ -1,28 +1,49 @@
+/*
+Fast4DReg is a Fiji macro for drift correction of 3D videos or 
+channel alignment in 3D multichannel image stacks. Drift or 
+misalignment can be corrected in all x-, y- and/or z-directions. 
+
+Time estimate+apply script estimates the drift between frames in 
+a 3D video and applied the correction to the same dataset. 
+
+Fast4DReg is dependent on the NanoJ-Core plugin and Bioformats.
+If you use this script in your research, please cite our pre-print and 
+Laine, R. F. Et al 2019. NanoJ: a high-performance open-source super-resolution 
+microscopy toolbox, doi: 10.1088/1361-6463/ab0261.
+
+Authors: Joanna W Pylvänäinen and Romain F Laine
+version: 1.0 (preprint)
+Licence: MIT
+*/
 
 run("Close All");
 print("\\Clear");
 run("Collect Garbage");
+
+// give experiment number
+#@ Integer (label="Experiment number", value=001, style="format:000") exp_nro ;
 
 // select file to be corrected
 #@ File (label="Select the file to be corrected", style="open") my_file_path ;
 
 //settings for xy-drif correction
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint1;
-#@ boolean (label = "<html><b>xy-drift correction (if not don't fill values)</b></html>") XY_registration ; 
+#@ boolean (label = "<html><b>xy-drift correction</b></html>") XY_registration ; 
 #@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_xy ;
 
-#@ Integer (label="Time averaging (default 100, 1 - disables)", min=1, max=100, style="spinner") time_xy ;
+#@ Integer (label="Time averaging (default: 100, 1 - disables)", min=1, max=100, style="spinner") time_xy ;
 
 #@ Integer (label="Maximum expected drift (pixels, 0 - auto)", min=0, max=auto, style="spinner") max_xy ;
 
 #@ String (label = "Reference frame", choices={"first frame (default, better for fixed)" , "previous frame (better for live)"}, style="listBox") reference_xy ;
 
 #@ boolean (label = "Crop output") crop_output ; 
+#@ String  (value="<html><i> Cropping output will be enabled automatically when continuing to z-correction.</i></html>", visibility="MESSAGE") hint2;
 
-//settings for z-drif correction
 
-#@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint2;
-#@ boolean (label = "<html><b>z-drift correction (if not don't fill values)</b></html>") z_registration ; 
+//settings for z-drift correction
+#@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint3;
+#@ boolean (label = "<html><b>z-drift correction</b></html>") z_registration ; 
 #@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_z ;
 
 #@ String(label = "Reslice mode", choices={"Top","Left"}, style="listBox") reslice_mode ;
@@ -37,16 +58,32 @@ run("Collect Garbage");
 
 #@ boolean (label = "Save RAM") ram_conservative_mode ; 
 
-#@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint2;
+#@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint4;
+
+
+// get time stamp
+MonthNames = newArray("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");  
+getDateAndTime(year, month, week, day, hour, min, sec, msec);
+print("----");  
+
+year = "" + year; //converts year to string
+timeStamp = year+"-"+MonthNames[month]+"-"+day+"-"+IJ.pad(exp_nro, 3);
+
+print(timeStamp);
+
 
 //set file paths
 filename_no_extension = File.getNameWithoutExtension(my_file_path);
-settings_file_path = File.getDirectory(my_file_path)+filename_no_extension+"_settings.csv"; 
-DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_xy+"_xy_"; //added xy in file name /JP
-DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_"; //z added to the name
 
-// create a new table
-// set columns
+results = File.getDirectory(my_file_path)+filename_no_extension+"_"+timeStamp+File.separator;
+File.makeDirectory(results);
+
+settings_file_path = results+filename_no_extension+"_settings.csv"; 
+DriftTable_path_XY = results+filename_no_extension+"-"+projection_type_xy+"_xy_";
+DriftTable_path_Z = results+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_";
+
+
+// create a settings table and set columns
 setResult("Setting", 0, "File Name");
 setResult("Value", 0, filename_no_extension);
 
@@ -98,19 +135,34 @@ setResult("Value", 15, DriftTable_path_XY +"DriftTable.njt");
 setResult("Setting", 16, "z-drift table path");
 setResult("Value", 16, DriftTable_path_Z +"DriftTable.njt");
 
+setResult("Setting", 17, "results path");
+setResult("Value", 17, results);
+
 saveAs("Results", settings_file_path);
-//run("Close");
+
 close("Results");
 
 //======================================================================
 // ----- Let's go ! -----
-IJ.log("------------------");
+IJ.log("===========================");
 t_start = getTime();
 
 //open file
 filename_no_extension = File.getNameWithoutExtension(my_file_path);
-IJ.log(my_file_path);
-run("TIFF Virtual Stack...", "open="+my_file_path);
+IJ.log("My file path: " + my_file_path);
+
+options = "open=[" + my_file_path+ "] autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
+run("Bio-Formats", options);
+
+// study the image a bit and close if dimentions are wrong
+getDimensions(width, height, channels, slices, frames);
+
+if (channels > 1)  {
+	
+	waitForUser("Please use one channel images");
+	exit();
+	
+}
 
 setBatchMode(true); 
 thisTitle = getTitle();
@@ -119,34 +171,33 @@ thisTitle = getTitle();
 // ----- Estimating the xy-correction from the resliced projection -----
 
 if (XY_registration){
+	IJ.log("Estimating the xy-drift....");
 	// make projection
 	getDimensions(width, height, channels, slices, frames);
 	run("Z Project...", "projection=["+projection_type_xy+"] all");
 	rename(projection_type_xy+" projection_"+filename_no_extension);
-	//setBatchMode("show");
-
-	//path to drift table moved up
-	//DriftTable_path_XY = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_xy+"_xy_"; //added xy in file name /JP
-	IJ.log(DriftTable_path_XY);
+	
+	IJ.log("xy-drift table path: " + DriftTable_path_XY);
 	
 	//estimate x-y drift
-	run("Estimate Drift", "time_xy max_xy reference_xy show_drift_plot apply choose=["+DriftTable_path_XY+"]");
+	run("Estimate Drift", "time="+time_xy+" max="+max_xy+" reference=["+reference_xy+"] show_drift_plot apply choose=["+DriftTable_path_XY+"]");
 	rename("DriftCorrOutput_XY");
 
 	//save drift plots
 	selectWindow("Drift-X");
-	saveAs("Tiff", my_file_path+"_Drift-plot-X");
-	//setBatchMode("show");
+	saveAs("Tiff", results+"_Drift-plot-X");
 
 	selectWindow("Drift-Y");
-	saveAs("Tiff", my_file_path+"_Drift-plot-Y");
-	//setBatchMode("show");	
+	saveAs("Tiff", results+"_Drift-plot-Y");
+
 
 // ----- Applying the xy-correction from the resliced projection -----
-
+	IJ.log("--------------------------------");
+	IJ.log("Applying the xy-correction to the stack....");
+	
 	for (i = 0; i < slices; i++) {
 		showProgress(i, slices);
-
+		
 		selectWindow(thisTitle);
 		run("Duplicate...", "title=DUP duplicate slices="+(i+1));
 		run("32-bit");
@@ -166,25 +217,18 @@ if (XY_registration){
 }
 
 	selectWindow("AllStarStack");
-	print(width, height, channels, slices, frames);
 
 	setBatchMode("show");
 	run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
 	
 	run("Enhance Contrast", "saturated=0.35");
 	rename(filename_no_extension+"_xyCorrected");
-	Corrected_path_xy = File.getDirectory(my_file_path)+filename_no_extension+"_xyCorrected"; //z added to the name
-	print("Corrected_path_xy");
-	IJ.log(Corrected_path_xy);
+	Corrected_path_xy = results+filename_no_extension+"_xyCorrected";
+	IJ.log("Path xy-corrected: " + Corrected_path_xy);
 
-// crops image when doing xy-correction and if z-estiatin is run //JP 	 
+// crops image when doing xy-correction AND if z-estimatin is performed	 
 	if (crop_output || z_registration) {	
 		minmaxXYdrift = getMinMaxXYFromDriftTable_xy(DriftTable_path_XY+"DriftTable.njt");
-		print(DriftTable_path_XY+"DriftTable.njt");
-		print(minmaxXYdrift[0]);
-		print(minmaxXYdrift[1]);
-		print(minmaxXYdrift[2]);
-		print(minmaxXYdrift[3]);
 
 	selectWindow(filename_no_extension+"_xyCorrected");
 	width = getWidth();
@@ -197,28 +241,35 @@ if (XY_registration){
 	run("Crop");
 	}
 
-	// Save intermediate file xy-correct //JP 	 
+	// Save intermediate file xy-correct	 
 	saveAs("Tiff", Corrected_path_xy);
 	close("*");
+
+
 }
 //======================================================================
 
 if (z_registration) {
+	IJ.log("===========================");
+	IJ.log("Estimating the z-drift....");
 	
 	// ----- opening the correct file-----	
 	if (!XY_registration){
-		run("TIFF Virtual Stack...", "open="+my_file_path);
+		options = "open=[" + my_file_path + "] autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
+		run("Bio-Formats", options);
 	} else {
-		run("TIFF Virtual Stack...", "open="+Corrected_path_xy+".tif");
+		Corrected_image_xy = Corrected_path_xy+".tif";
+		options = "open=[" + Corrected_image_xy + "]";
+		run("TIFF Virtual Stack...", options);
+		
 	}
 	
-// ----- Reslicing for z-projection estimation-----	
+	// ----- Reslicing for z-projection estimation-----	
 	getVoxelSize(width, height, depth, unit);
 	run("Reslice [/]...", "output="+depth+" start="+reslice_mode+" avoid");
 	rename("DataRescliced");
 	getDimensions(width, height, channels, slices, frames);
 	scale_factor = round(width/height);
-	print("Scaling factor: "+scale_factor);
 	
 	setBatchMode("show");
 	
@@ -230,11 +281,10 @@ if (z_registration) {
 	
 	run("Scale...", "x=1.0 y="+scale_factor+" z=1.0 width="+width+" height="+(scale_factor*width)+" depth="+frames+" interpolation=Bicubic average process create");
 
-	//path to drift table moved up
-	//DriftTable_path_Z = File.getDirectory(my_file_path)+filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_"; //z added to the name
-	IJ.log(DriftTable_path_Z);
+	IJ.log("z-drift table path: " + DriftTable_path_Z);
 	
-	run("Estimate Drift", "time_z max_z reference_z show_drift_plot apply choose=["+DriftTable_path_Z+"]"); //added Z to the dfrist table path name
+	run("Estimate Drift", "time="+time_z+" max="+max_z+" reference=["+reference_z+"] show_drift_plot apply choose=["+DriftTable_path_Z+"]");
+		
 	rename("DriftCorrOutput");
 	
 	selectWindow("Drift-X");
@@ -243,7 +293,7 @@ if (z_registration) {
 	selectWindow("Drift-Y");
 	rename("Drift-Z");
 	Plot.setXYLabels("time-points", "z-drift (px)");
-	saveAs("Tiff", my_file_path+"_Drift-plot-Z");
+	saveAs("Tiff", results+"_Drift-plot-Z");
 	//setBatchMode("show");
 	
 	selectWindow("DriftCorrOutput");
@@ -270,7 +320,8 @@ if (z_registration) {
 //------- Applying the z correction -------- 
 	
 setBatchMode(true);
-IJ.log("Applying the correction to the stack....");
+IJ.log("--------------------------------");
+IJ.log("Applying the z-correction to the stack....");
 
 if (extend_stack_to_fit){
 	minmaxZdrift = getMinMaxFromDriftTable_z(DriftTable_path_Z+"DriftTable.njt");
@@ -288,7 +339,7 @@ padded_height = height + padding;
 if (!ram_conservative_mode){
 	newImage("DataRescliced_Corrected", "32-bit black", width, padded_height, slices*frames);
 	setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
-	//setBatchMode("show");	
+	
 }
 
 for (i = 0; i < slices; i++) {
@@ -362,12 +413,12 @@ if (reslice_mode == "Left"){
 	
 //save files here
 if (!XY_registration) {
-	rename(filename_no_extension+"_zCorrected"); // corrected naming from _Corrected to _zCorrected //JP
-	Corrected_path_z = File.getDirectory(my_file_path)+filename_no_extension+"_zCorrected"; //z added to the name
+	rename(filename_no_extension+"_zCorrected"); 
+	Corrected_path_z = results+filename_no_extension+"_zCorrected"; 
 	saveAs("Tiff", Corrected_path_z);
 	} else {
 	rename(filename_no_extension+"_xyzCorrected");
-	Corrected_path_xyz = File.getDirectory(my_file_path)+filename_no_extension+"_xyzCorrected";
+	Corrected_path_xyz = results+filename_no_extension+"_xyzCorrected";
 	saveAs("Tiff", Corrected_path_xyz);  
 	}   
 
@@ -378,7 +429,7 @@ if (!XY_registration) {
 }
 
 close("\\Others");
-IJ.log("------");
+IJ.log("===========");
 IJ.log("Time taken: "+round((getTime()-t_start)/1000)+"s");
 IJ.log("All done.");
 
