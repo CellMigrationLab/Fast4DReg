@@ -1,11 +1,16 @@
 # Fast4DReg
 
-![example1](https://user-images.githubusercontent.com/74545655/174895500-48bf89f0-3bbe-4073-9dff-b7da828d78ef.gif)
 
+
+<img src="images/Fast4DReg-logo.png" alt="drawing" width="200"/>
 
 # Overview
 
 Fast4DReg is a Fiji macro for drift correction for 2D and 3D video and is able to correct drift in all x-, y- and/or z-directions. Fast4DReg creates intensity projections along both axes and estimates their drift using cross-correlation based drift correction, and then translates the video frame by frame (Figure 1). Additionally, Fast4DReg can be used for aligning multi-channel 2D or 3D images which is particularly useful for instruments that suffer from a misalignment of channels.
+
+![example1](https://user-images.githubusercontent.com/74545655/174895500-48bf89f0-3bbe-4073-9dff-b7da828d78ef.gif)
+
+## Fast4DReg tools
 
 Fast4DReg consists of four scripts, and two sub-menus. The Legacy 2D menu stores estimate and apply functions used in the script. These function are macro callable. NanoJTable IO menu stores functions for opening and saving the NanoJ tables, also macro callable. 
 
