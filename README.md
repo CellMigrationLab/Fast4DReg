@@ -57,7 +57,7 @@ Fast4DReg is easy to istall by enabling the Fast4DReg update site:
 
 ### Dependencies
 
-Fast4DReg is dependent on **Bioformats**, which can be installed through the Fiji update site: 
+Fast4DReg is dependent on **Bio-Formats**, which can be installed through the Fiji update site: 
 - Open ImageJ 
 - Navigate to *Help -> Update -> Manage update sites*
 - Select Bio-Formats
@@ -159,7 +159,7 @@ If you create a settings file with the *estimate+apply* -script and use it to co
 
 * [Joanna Pylvänäinen](https://twitter.com/JwPylvanainen)
 * [Romain F. Laine](https://twitter.com/LaineBioImaging)
-* [Bruno Manuel Santos Saraiva](https://github.com/brunomsaraiva)
+* [Bruno Manuel Santos Saraiva](https://twitter.com/Bruno_MSaraiva)
 * [Ricardo Henriques](https://twitter.com/HenriquesLab)
 * [Guillaume Jacquemet](https://twitter.com/guijacquemet)
 
@@ -173,7 +173,7 @@ Pylvänäinen J.W., Laine, R. F., Ghimire, S., Follain G., Henriques, R & Jacque
 
 # Change log
  
-  **220222 Version 2.0 (the dimensionalis)**
+  **220222 Version 2.0 (the dimensionalist)**
 
  Fast4DReg runs now independent of NanoJ and is able to correct drift in both, 2D and 3D images. 
 
