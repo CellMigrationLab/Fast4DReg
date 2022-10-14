@@ -1,7 +1,3 @@
-# Fast4DReg
-
-
-
 <img src="images/Fast4DReg-logo.png" alt="drawing" width="200"/>
 
 # Overview
