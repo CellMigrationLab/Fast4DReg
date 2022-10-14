@@ -178,7 +178,7 @@ Pylvänäinen J.W., Laine, R. F., Ghimire, S., Follain G., Henriques, R & Jacque
 
 # Change log
  
-  **220222 Version 2.0 (the dimensionalist)**
+  **221014 Version 2.0 (the dimensionalist)**
 
  Fast4DReg runs now independent of NanoJ and is able to correct drift in both, 2D and 3D images. 
 
