@@ -49,7 +49,7 @@ If using multichannel images, the channels need to be split. The drift will be e
 Fast4DReg is easy to istall by enabling the Fast4DReg update site:
 - Open ImageJ 
 - Navigate to *Help -> Update -> Manage update sites*
-- Select FastDReg
+- Select Fast4DReg
 
 ![image](images/Fast4DReg-install-0.png)
 
