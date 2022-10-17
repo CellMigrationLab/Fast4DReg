@@ -78,7 +78,7 @@ Fast4DReg is dependent on **Bio-Formats**, which can be installed through the Fi
 Prepare your image to have one channel. If you have multiple channels they can all be in the same folder as separate files.
 
 **Running the script**
-1. Open the "time_estimate+apply" script and click run. The user interface opens.
+1. Open the "time_estimate+apply" from the Fiji Plugins menu: *Plugins -> Fast4FReg -> time_estimate+apply.* The user interface opens.
 
 ![image](images/Fast4Dreg-estimateUI.png)
 
@@ -123,9 +123,10 @@ the faster scale sample motion, it is better to compare to the previous frame.
   
 ### Apply drift
 
-1. Open the "apply" script and click run. The user interface opens.  
+1. Open the "time_apply" from the Fiji Plugins menu: *Plugins -> Fast4FReg -> time_apply.* The user interface opens. 
 
 ![image](images/Fast4DReg-applyUI.png)
+
 *Figure 3: Apply user interface*
 
 
@@ -135,7 +136,7 @@ the faster scale sample motion, it is better to compare to the previous frame.
 
 - **Select where to save the corrected images:** All corrected images will be saved to this folder.
  
-1. Click ok. 
+2. Click ok. 
 
 Done!
 
