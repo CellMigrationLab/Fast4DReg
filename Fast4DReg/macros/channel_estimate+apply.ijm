@@ -22,7 +22,7 @@ microscopy toolbox, doi: 10.1088/1361-6463/ab0261.
 
 Authors: Joanna W Pylvänäinen, Guillaume Jacquemet, Romain F Laine, Bruno Saraiva
 Contact: joanna.pylvanainen@abo.fi
-Cersion: 2.0 (the dimensionalist)
+Version: 2.1 (the clean dimensionalist)
 Documentation: https://github.com/guijacquemet/Fast4DReg
 Licence: MIT
 
@@ -36,46 +36,29 @@ run("Collect Garbage");
 // give experiment number
 #@ Integer (label="Experiment number", value=001, style="format:000") exp_nro ;
 
-
 // select file to be corrected
-
 #@ File[] (label="Select the file(s) to be corrected") files ;
 
-
-//settings for xy-drif correction
+//settings for xy-drift correction
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint1;
 #@ boolean (label = "<html><b>xy-drift correction</b></html>") XY_registration ; 
 #@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_xy ;
-
 #@ Integer (label="Time averaging (default: 100, 1 - disables)", min=1, max=100, style="spinner") time_xy ;
-
 #@ Integer (label="Maximum expected drift (pixels, 0 - auto)", min=0, max=auto, style="spinner") max_xy ;
-
 #@ String (label = "Reference frame", choices={"first frame (default, better for fixed)" , "previous frame (better for live)"}, style="listBox") reference_xy ;
-
 #@ boolean (label = "Crop output") crop_output ; 
-#@ String  (value="<html><i> Cropping output will be enabled automatically when continuing to z-correction.</i></html>", visibility="MESSAGE") hint2;
-
 
 //settings for z-drift correction
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint3;
 #@ boolean (label = "<html><b>z-drift correction</b></html>") z_registration ; 
 #@ String(label = "Projection type", choices={"Max Intensity","Average Intensity"}, style="listBox") projection_type_z ;
-
 #@ String(label = "Reslice mode", choices={"Top","Left"}, style="listBox") reslice_mode ;
-
 #@ Integer (label="Time averaging (default 100, 1 - disables)", min=1, max=100, style="spinner") time_z ;
-
 #@ Integer (label="Maximum expected drift (pixels, 0 - auto)", min=0, max=auto, style="spinner") max_z ;
-
 #@ String (label = "Reference frame", choices={"first frame (default, better for fixed)" , "previous frame (better for live)"}, style="listBox") reference_z ;
-
 #@ boolean (label = "Extend stack to fit") extend_stack_to_fit ; 
-
 #@ boolean (label = "Save RAM") ram_conservative_mode ; 
-
 #@ String  (value="-----------------------------------------------------------------------------", visibility="MESSAGE") hint4;
-
 
 // get time stamp
 MonthNames = newArray("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");  
@@ -175,7 +158,8 @@ for (p = 0; p < lengthOf(files); p++) {
 	saveAs("Results", settings_file_path);
 	
 	close("Results");
-	
+	
+
 	//swap channels to time	
 	run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 	
@@ -188,37 +172,40 @@ for (p = 0; p < lengthOf(files); p++) {
 	IJ.log("===========================");
 		
 	if (slices == 1) {
+		
 		IJ.log("Now processing image: " + thisTitle); 
-		IJ.log("2D image detected - z-correction disabled");
-		IJ.log("Estimating and applying the xy-correction to the 2D image....");
+
+		if (XY_registration){
+			IJ.log("2D image detected - z-correction disabled");
+			IJ.log("Estimating and applying the xy-correction to the 2D image....");
+			
+			//remove composite mode
+			run("Hyperstack to Stack");
 		
-		//remove composite mode
-		run("Hyperstack to Stack");
-	
-		run("F4DR Estimate Drift", "time="+time_xy+" max="+max_xy+" reference=["+reference_xy+"] show_drift_plot apply choose=["+DriftTable_path_XY+"]");	
-		rename(filename_no_extension+"_xyCorrected");
-	
-		//save drift plots
-		selectWindow("Drift-X");
-		saveAs("Tiff", results + filename_no_extension + "_Drift-plot-X");
-	
-		selectWindow("Drift-Y");
-		saveAs("Tiff", results + filename_no_extension + "_Drift-plot-Y");
+			run("F4DR Estimate Drift", "time="+time_xy+" max="+max_xy+" reference=["+reference_xy+"] show_drift_plot apply choose=["+DriftTable_path_XY+"]");	
+			rename(filename_no_extension+"_xyCorrected");
 		
-		// crops image when doing xy-correction
-		if (crop_output) {	
-			minmaxXYdrift = getMinMaxXYFromDriftTable_xy(DriftTable_path_XY+"DriftTable.njt");
-	
-		selectWindow(filename_no_extension+"_xyCorrected");
-		width = getWidth();
-		height = getHeight();
-		 
-		new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
-		new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
+			//save drift plots
+			selectWindow("Drift-X");
+			saveAs("Tiff", results + filename_no_extension + "_Drift-plot-X");
 		
-		makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
-		run("Crop");
-		}
+			selectWindow("Drift-Y");
+			saveAs("Tiff", results + filename_no_extension + "_Drift-plot-Y");
+			
+			// crops image when doing xy-correction
+			if (crop_output) {	
+				minmaxXYdrift = getMinMaxXYFromDriftTable_xy(DriftTable_path_XY+"DriftTable.njt");
+		
+				selectWindow(filename_no_extension+"_xyCorrected");
+				width = getWidth();
+				height = getHeight();
+			 
+				new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
+				new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
+			
+				makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
+				run("Crop");
+			}
 			
 		//swap back to stack
 		run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
@@ -228,7 +215,11 @@ for (p = 0; p < lengthOf(files); p++) {
 		Corrected_path_xy = results+ File.separator + filename_no_extension + "_xyCorrected";	 
 		saveAs("Tiff", Corrected_path_xy);
 		close("*");
+		}
 		
+		if (!XY_registration){
+			IJ.log("2D image detected - z-correction disabled, no images saved");
+		}
 	}
 	
 	//the 3D module
@@ -239,79 +230,81 @@ for (p = 0; p < lengthOf(files); p++) {
 	//======================================================================
 	// ----- Estimating the xy-correction from the resliced projection -----
 	
-	if (XY_registration){
-		IJ.log("Estimating the xy-drift....");
-		// make projection
-		getDimensions(width, height, channels, slices, frames);
-		run("Z Project...", "projection=["+projection_type_xy+"] all");
-		rename(projection_type_xy+" projection_"+filename_no_extension);
-		
-		//estimate x-y drift
-		run("F4DR Estimate Drift", "time="+time_xy+" max="+max_xy+" reference=["+reference_xy+"] show_drift_plot apply choose=["+DriftTable_path_XY+"]");
-		rename("DriftCorrOutput_XY");
-	
-		//save drift plots
-		selectWindow("Drift-X");
-		saveAs("Tiff", results+"_Drift-plot-X");
-	
-		selectWindow("Drift-Y");
-		saveAs("Tiff", results+"_Drift-plot-Y");
-	
-	
-	// ----- Applying the xy-correction from the resliced projection -----
-
-		IJ.log("Applying the xy-correction to the stack....");
-		
-		for (i = 0; i < slices; i++) {
-			showProgress(i, slices);
+		if (XY_registration){
+			IJ.log("Estimating the xy-drift....");
+			// make projection
+			getDimensions(width, height, channels, slices, frames);
+			run("Z Project...", "projection=["+projection_type_xy+"] all");
+			rename(projection_type_xy+" projection_"+filename_no_extension);
 			
-			selectWindow(thisTitle);
-			run("Duplicate...", "title=DUP duplicate slices="+(i+1));
-			run("32-bit");
-			run("F4DR Correct Drift", "choose=["+DriftTable_path_XY+"DriftTable.njt]");
-			selectWindow("DUP - drift corrected");
-			rename("SLICE");
+			//estimate x-y drift
+			run("F4DR Estimate Drift", "time="+time_xy+" max="+max_xy+" reference=["+reference_xy+"] show_drift_plot apply choose=["+DriftTable_path_XY+"]");
+			rename("DriftCorrOutput_XY");
 		
-		if (i==0){
-			rename("AllStarStack");}
-		else {
-			// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
-			run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
-			rename("AllStarStack");}
-	
-		close("DUP");	
-	
-	}
-		selectWindow("AllStarStack");
-	
-		run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
+			//save drift plots
+			selectWindow("Drift-X");
+			saveAs("Tiff", results+"_Drift-plot-X");
 		
-		run("Enhance Contrast", "saturated=0.35");
-		rename(filename_no_extension+"_xyCorrected");
-		Corrected_path_xy = results+ File.separator +filename_no_extension+"_xyCorrected";
+			selectWindow("Drift-Y");
+			saveAs("Tiff", results+"_Drift-plot-Y");
 	
-	// crops image when doing xy-correction AND if z-estimatin is performed	 
-		if (crop_output || z_registration) {	
-			minmaxXYdrift = getMinMaxXYFromDriftTable_xy(DriftTable_path_XY+"DriftTable.njt");
 	
-		selectWindow(filename_no_extension+"_xyCorrected");
-		width = getWidth();
-		height = getHeight();
-		 
-		new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
-		new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
+			// ----- Applying the xy-correction from the resliced projection -----
+
+			IJ.log("Applying the xy-correction to the stack....");
+			
+			for (i = 0; i < slices; i++) {
+				showProgress(i, slices);
+				
+				selectWindow(thisTitle);
+				run("Duplicate...", "title=DUP duplicate slices="+(i+1));
+				run("32-bit");
+				run("F4DR Correct Drift", "choose=["+DriftTable_path_XY+"DriftTable.njt]");
+				selectWindow("DUP - drift corrected");
+				rename("SLICE");
+			
+				if (i==0){
+					rename("AllStarStack");
+				} else {
+					// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
+					run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
+					rename("AllStarStack");
+				}
 		
-		makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
-		run("Crop");
+				close("DUP");	
+			}
+
+			selectWindow("AllStarStack");
+		
+			run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
+			
+			run("Enhance Contrast", "saturated=0.35");
+			rename(filename_no_extension+"_xyCorrected");
+			Corrected_path_xy = results+ File.separator +filename_no_extension+"_xyCorrected";
+	
+			// crops image when doing xy-correction AND if z-estimatin is performed	 
+			if (crop_output) {	
+				minmaxXYdrift = getMinMaxXYFromDriftTable_xy(DriftTable_path_XY+"DriftTable.njt");
+		
+				selectWindow(filename_no_extension+"_xyCorrected");
+				width = getWidth();
+				height = getHeight();
+			
+				new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
+				new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
+				
+				makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
+				run("Crop");
+			}
+	
+			//swap back to stack
+			run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
+			
+			// Save intermediate file xy-correct	 
+			saveAs("Tiff", Corrected_path_xy);
+			close("*");
+	
 		}
-		//swap back to stack
-		run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
-		
-		// Save intermediate file xy-correct	 
-		saveAs("Tiff", Corrected_path_xy);
-		close("*");
-	
-	}
 		//======================================================================
 		
 		if (z_registration) {
@@ -324,7 +317,6 @@ for (p = 0; p < lengthOf(files); p++) {
 				run("Bio-Formats", options);
 				run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
 			} else {
-				
 				Corrected_image_xy = Corrected_path_xy+".tif";
 				options = "open=[" + Corrected_image_xy + "]";
 				run("TIFF Virtual Stack...", options);
@@ -339,7 +331,7 @@ for (p = 0; p < lengthOf(files); p++) {
 			getDimensions(width, height, channels, slices, frames);
 			scale_factor = round(width/height);
 			
-			setBatchMode("show");//don't remove
+			setBatchMode("show"); //don't remove
 			
 			//======================================================================
 			// ----- Estimating the z correction  from the resliced projection -----
@@ -368,10 +360,12 @@ for (p = 0; p < lengthOf(files); p++) {
 			run("F4DR Open NanoJ Table (NJT)...", "load=["+DriftTable_path_Z+"DriftTable.njt]");
 			TableName = filename_no_extension+"-"+projection_type_z+"-"+reslice_mode+"_z_DriftTable.njt";
 			Table.rename(TableName, "Results");
+			
 			for (i = 0; i < nResults; i++) {
 				setResult("X-Drift (pixels)", i, 0);
 				setResult("XY-Drift (pixels)", i, 0);
 			}
+			
 			updateResults();
 			run("F4DR Save Results-Table as NJT...", "save=["+DriftTable_path_Z+"DriftTable.njt]");
 			
@@ -383,187 +377,182 @@ for (p = 0; p < lengthOf(files); p++) {
 		//------- Applying the z correction -------- 
 			
 		
-		IJ.log("Applying the z-correction to the stack....");
-		
-		if (extend_stack_to_fit){
-			minmaxZdrift = getMinMaxFromDriftTable_z(DriftTable_path_Z+"DriftTable.njt");
-			padding = 2*maxOf(-minmaxZdrift[0], minmaxZdrift[1]);
-			}else {
-			padding = 0;
-		}
-		
-		selectWindow("DataRescliced");
-		getDimensions(width, height, channels, slices, frames);
-		getVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
-		padded_height = height + padding;
-		
-		if (!ram_conservative_mode){
-			newImage("DataRescliced_Corrected", "32-bit black", width, padded_height, slices*frames);
-			setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
+			IJ.log("Applying the z-correction to the stack....");
 			
-		}
+			if (extend_stack_to_fit){
+				minmaxZdrift = getMinMaxFromDriftTable_z(DriftTable_path_Z+"DriftTable.njt");
+				padding = 2*maxOf(-minmaxZdrift[0], minmaxZdrift[1]);
+			} else {
+				padding = 0;
+			}
 		
-		for (i = 0; i < slices; i++) {
-			showProgress(i, slices);
 			selectWindow("DataRescliced");
-		
-			if (ram_conservative_mode){
-				setSlice(1);
-				run("Duplicate...", "title=DUP duplicate slices=1");
-			}else {
-				run("Duplicate...", "title=DUP duplicate slices="+(i+1));
+			getDimensions(width, height, channels, slices, frames);
+			getVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
+			padded_height = height + padding;
+			
+			if (!ram_conservative_mode){
+				newImage("DataRescliced_Corrected", "32-bit black", width, padded_height, slices*frames);
+				setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);	
 			}
 		
-			run("Canvas Size...", "width="+width+" height="+(padded_height)+" position=Center zero");
+			for (i = 0; i < slices; i++) {
+				showProgress(i, slices);
+				selectWindow("DataRescliced");
 			
-			run("F4DR Correct Drift", "choose=["+DriftTable_path_Z+"DriftTable.njt]");
-			rename("SLICE");
-			run("Hyperstack to Stack");
+				if (ram_conservative_mode){
+					setSlice(1);
+					run("Duplicate...", "title=DUP duplicate slices=1");
+				} else {
+					run("Duplicate...", "title=DUP duplicate slices="+(i+1));
+				}
 			
-			if (ram_conservative_mode){
-				if (i==0){
-					rename("AllStarStack");}
-				else {
-					// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
-					run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
-					rename("AllStarStack");}
-			}
-			else {
-				for (f = 0; f < frames; f++) {
-					selectWindow("SLICE");
-					setSlice(f+1);
-					run("Select All");
-					run("Copy");
-					selectWindow("DataRescliced_Corrected");
-					setSlice(i*frames + f+1);
-					run("Paste");		
+				run("Canvas Size...", "width="+width+" height="+(padded_height)+" position=Center zero");
+				
+				run("F4DR Correct Drift", "choose=["+DriftTable_path_Z+"DriftTable.njt]");
+				rename("SLICE");
+				run("Hyperstack to Stack");
+			
+				if (ram_conservative_mode){
+					if (i==0){
+						rename("AllStarStack");
+					} else {
+						// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
+						run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
+						rename("AllStarStack");
+					}
+				} else {
+					for (f = 0; f < frames; f++) {
+						selectWindow("SLICE");
+						setSlice(f+1);
+						run("Select All");
+						run("Copy");
+						selectWindow("DataRescliced_Corrected");
+						setSlice(i*frames + f+1);
+						run("Paste");		
+					}
+				}
+				
+				close("DUP");
+		
+				if (ram_conservative_mode){
+					selectWindow("DataRescliced");
+					run("Delete Slice", "delete=slice");
+				} else {
+					close("SLICE");
 				}
 			}
-				
-			close("DUP");
 		
-			if (ram_conservative_mode){
-				selectWindow("DataRescliced");
-				run("Delete Slice", "delete=slice");
-			}
-			else {
-				close("SLICE");
-			}
-		}
-		
-		if (!ram_conservative_mode){
-			close("DataRescliced");
-			selectWindow("DataRescliced_Corrected");
-			run("Select None");
-			run("Enhance Contrast", "saturated=0.35");
-		}
-		else {
-			selectWindow("AllStarStack");
-		}
-		
-		run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
-		getVoxelSize(width, height, depth, unit);
-		run("Reslice [/]...", "output="+depth+" start=Top avoid");
-		
-		if (reslice_mode == "Left"){
-			run("Flip Vertically", "stack");
-			run("Rotate 90 Degrees Right");
-		}
-		
-		//reorder back to two channel image	
-		run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
-		getDimensions(width, height, channels, slices, frames);
-				
-		//save files here
-		if (!XY_registration) {
-			rename(filename_no_extension+"_zCorrected"); 
-			Corrected_path_z = results+ File.separator +filename_no_extension+"_zCorrected"; 
-			saveAs("Tiff", Corrected_path_z);
+			if (!ram_conservative_mode){
+				close("DataRescliced");
+				selectWindow("DataRescliced_Corrected");
+				run("Select None");
+				run("Enhance Contrast", "saturated=0.35");
 			} else {
-			rename(filename_no_extension+"_xyzCorrected");
-			Corrected_path_xyz = results+ File.separator +filename_no_extension+"_xyzCorrected";
-			saveAs("Tiff", Corrected_path_xyz);  
-			}   
+				selectWindow("AllStarStack");
+			}
 		
-			run("Enhance Contrast", "saturated=0.35");
-
+			run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
+			getVoxelSize(width, height, depth, unit);
+			run("Reslice [/]...", "output="+depth+" start=Top avoid");
+		
+			if (reslice_mode == "Left"){
+				run("Flip Vertically", "stack");
+				run("Rotate 90 Degrees Right");
+			}
+		
+			//reorder back to two channel image	
+			run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");
+			getDimensions(width, height, channels, slices, frames);
+				
+			//save files here
+			if (!XY_registration) {
+				rename(filename_no_extension+"_zCorrected"); 
+				Corrected_path_z = results+ File.separator +filename_no_extension+"_zCorrected"; 
+				saveAs("Tiff", Corrected_path_z);
+				} else {
+				rename(filename_no_extension+"_xyzCorrected");
+				Corrected_path_xyz = results+ File.separator +filename_no_extension+"_xyzCorrected";
+				saveAs("Tiff", Corrected_path_xyz);  
+				}   
 			
+			run("Enhance Contrast", "saturated=0.35");
 		}
-}
-
-run("Close All");
-run("Collect Garbage");
-
-IJ.log("--- Correction completed --- Time taken: "+round((getTime()-p_start)/1000)+"s ---");
-
-setBatchMode(false);
-
-//====== THE END =======================================================
-
-//======================================================================
-// ----- Helper functions -----
-function getMinMaxFromDriftTable_z(path_to_table) {
-	run("F4DR Open NanoJ Table (NJT)...", "load=["+path_to_table+"]");
-	Table.rename(File.getName(path_to_table), "Results");
-
-	minmaxZdrift = newArray(2);
-	minmaxZdrift[0] = 0;
-	minmaxZdrift[1] = 0;
-
-	for (i = 0; i < nResults; i++) {
-		zDrift = getResult("Y-Drift (pixels)", i);
-		if (zDrift < minmaxZdrift[0]) minmaxZdrift[0] = zDrift;
-		if (zDrift > minmaxZdrift[1]) minmaxZdrift[1] = zDrift;
 	}
 
-	minmaxZdrift[0] = floor(minmaxZdrift[0]); 
-	minmaxZdrift[1] = Math.ceil(minmaxZdrift[1]);
-	close("Results");
+	run("Close All");
+	run("Collect Garbage");
 
-	return minmaxZdrift;
-}
+	IJ.log("--- Correction completed --- Time taken: "+round((getTime()-p_start)/1000)+"s ---");
 
-//--------------------------------------------- 
-function resetDriftTable(path_to_table, scale_factor) {
-	run("F4DR Open NanoJ Table (NJT)...", "load=["+path_to_table+"]");
-	Table.rename(File.getName(path_to_table), "Results");
+	setBatchMode(false);
 
-	for (i = 0; i < nResults; i++) {
-		zDrift = getResult("Y-Drift (pixels)", i);
-		setResult("Y-Drift (pixels)", i, zDrift/scale_factor);
-	}
-	updateResults();
+	//====== THE END =======================================================
 
-	run("F4DR Save Results-Table as NJT...", "save=["+path_to_table+"]");
-	close("Results");
+	//======================================================================
+	// ----- Helper functions -----
+	function getMinMaxFromDriftTable_z(path_to_table) {
+		run("F4DR Open NanoJ Table (NJT)...", "load=["+path_to_table+"]");
+		Table.rename(File.getName(path_to_table), "Results");
 
-	return;
-}
+		minmaxZdrift = newArray(2);
+		minmaxZdrift[0] = 0;
+		minmaxZdrift[1] = 0;
 
-//--------------------------------------------- 
-function getMinMaxXYFromDriftTable_xy(path_to_table) {
-	run("F4DR Open NanoJ Table (NJT)...", "load=["+path_to_table+"]");
-	Table.rename(File.getName(path_to_table), "Results");
+		for (i = 0; i < nResults; i++) {
+			zDrift = getResult("Y-Drift (pixels)", i);
+			if (zDrift < minmaxZdrift[0]) minmaxZdrift[0] = zDrift;
+			if (zDrift > minmaxZdrift[1]) minmaxZdrift[1] = zDrift;
+		}
 
-	minmaxXYdrift = newArray(4);
-	minmaxXYdrift[0] = 0;
-	minmaxXYdrift[1] = 0;
-	minmaxXYdrift[2] = 0;
-	minmaxXYdrift[3] = 0;
+		minmaxZdrift[0] = floor(minmaxZdrift[0]); 
+		minmaxZdrift[1] = Math.ceil(minmaxZdrift[1]);
+		close("Results");
 
-	for (i = 0; i < nResults; i++) {
-		xDrift = getResult("X-Drift (pixels)", i);
-		yDrift = getResult("Y-Drift (pixels)", i);
-		if (xDrift < minmaxXYdrift[0]) minmaxXYdrift[0] = xDrift;
-		if (xDrift > minmaxXYdrift[1]) minmaxXYdrift[1] = xDrift;
-
-		if (yDrift < minmaxXYdrift[2]) minmaxXYdrift[2] = yDrift;
-		if (yDrift > minmaxXYdrift[3]) minmaxXYdrift[3] = yDrift;
+		return minmaxZdrift;
 	}
 
-	close("Results");
-	return minmaxXYdrift;
-}
+	//--------------------------------------------- 
+	function resetDriftTable(path_to_table, scale_factor) {
+		run("F4DR Open NanoJ Table (NJT)...", "load=["+path_to_table+"]");
+		Table.rename(File.getName(path_to_table), "Results");
+
+		for (i = 0; i < nResults; i++) {
+			zDrift = getResult("Y-Drift (pixels)", i);
+			setResult("Y-Drift (pixels)", i, zDrift/scale_factor);
+		}
+		updateResults();
+
+		run("F4DR Save Results-Table as NJT...", "save=["+path_to_table+"]");
+		close("Results");
+
+		return;
+	}
+
+	//--------------------------------------------- 
+	function getMinMaxXYFromDriftTable_xy(path_to_table) {
+		run("F4DR Open NanoJ Table (NJT)...", "load=["+path_to_table+"]");
+		Table.rename(File.getName(path_to_table), "Results");
+
+		minmaxXYdrift = newArray(4);
+		minmaxXYdrift[0] = 0;
+		minmaxXYdrift[1] = 0;
+		minmaxXYdrift[2] = 0;
+		minmaxXYdrift[3] = 0;
+
+		for (i = 0; i < nResults; i++) {
+			xDrift = getResult("X-Drift (pixels)", i);
+			yDrift = getResult("Y-Drift (pixels)", i);
+			if (xDrift < minmaxXYdrift[0]) minmaxXYdrift[0] = xDrift;
+			if (xDrift > minmaxXYdrift[1]) minmaxXYdrift[1] = xDrift;
+
+			if (yDrift < minmaxXYdrift[2]) minmaxXYdrift[2] = yDrift;
+			if (yDrift > minmaxXYdrift[3]) minmaxXYdrift[3] = yDrift;
+		}
+
+		close("Results");
+		return minmaxXYdrift;
+	}
 }
 
 IJ.log("==============================");

@@ -14,7 +14,7 @@ microscopy toolbox, doi: 10.1088/1361-6463/ab0261.
 
 Authors: Joanna W Pylvänäinen, Guillaume Jacquemet, Romain F Laine, Bruno Saraiva
 Contact: joanna.pylvanainen@abo.fi
-Cersion: 2.0 (the dimensionalist)
+Version: 2.1 (the clean dimensionalist)
 Documentation: https://github.com/guijacquemet/Fast4DReg
 Licence: MIT
 
@@ -25,12 +25,9 @@ run("Close All");
 print("\\Clear");
 run("Collect Garbage");
 
-// select file to be corrected
 // select file(s) to be corrected
 #@ File[] (label="Select the file(s) to be corrected") files ;
-
 #@ File (label="Select settings file (.csv)", style="open") settings_file_path ;
-
 #@ File (label="Select where to save corrected images", style="directory") results_path ;
 
 
@@ -51,7 +48,6 @@ for (p = 0; p < lengthOf(files); p++) {
 	Table.open(settings_file_path);
 	
 	// get variables from settings file
-	
 	File_Name = Table.getString("Value", 0);
 	XY_registration = Table.get("Value", 1);
 	crop_output = Table.getString("Value",6);
@@ -76,85 +72,93 @@ for (p = 0; p < lengthOf(files); p++) {
 	// 2D module
 	
 	if (slices == 1) {
+		
 		IJ.log("--------------------------------");
 		IJ.log("Now correcting image: " + thisTitle); 
-		IJ.log("2D image detected - no need for 3D correction");
-		IJ.log("Applying the xy-correction to the stack....");
-		
-		run("F4DR Correct Drift", "choose=["+DriftTable_path_XY+"]");
-		
-		if (crop_output){
-			minmaxXYdrift = getMinMaxXYFromDriftTable(DriftTable_path_XY);
-		
-			new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
-			new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
-			makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
-			run("Crop");
-		}
 	
-		// Save as tif
-		Corrected_path_xy = results_path + File.separator + filename_no_extension+"_xyCorrected";   	 
-		saveAs("Tiff", Corrected_path_xy);
-		close("*");
-	
+		if (XY_registration){
+
+			IJ.log("2D image detected - no need for 3D correction");
+			IJ.log("Applying the xy-correction to the stack....");
+			
+			run("F4DR Correct Drift", "choose=["+DriftTable_path_XY+"]");
+			
+			if (crop_output){
+				minmaxXYdrift = getMinMaxXYFromDriftTable(DriftTable_path_XY);
+			
+				new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
+				new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
+				makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
+				run("Crop");
+				}
+		
+			// Save as tif
+			Corrected_path_xy = results_path + File.separator + filename_no_extension+"_xyCorrected";   	 
+			saveAs("Tiff", Corrected_path_xy);
+			close("*");
+			}
+			
+			if (!XY_registration){
+				IJ.log("2D image detected - z-correction disabled, no images saved");
+			}
 	}
 		
 	// 3D module
 			
-	if (slices > 1) 	{
+	if (slices > 1) {
 	
 	// =============== XY ====================
 		if (XY_registration){
 		
-		IJ.log("--------------------------------");
-		IJ.log("Now correcting image: " + filename_no_extension);
-		IJ.log("Applying the xy-correction to the stack....");
+			IJ.log("--------------------------------");
+			IJ.log("Now correcting image: " + filename_no_extension);
+			IJ.log("Applying the xy-correction to the stack....");
 
-		setBatchMode(true); 
-		
-		for (i = 0; i < slices; i++) {
-			showProgress(i, slices);
-		
-			selectWindow(thisTitle);
-			run("Duplicate...", "title=DUP duplicate slices="+(i+1));
-			run("32-bit");
-			run("F4DR Correct Drift", "choose=["+DriftTable_path_XY+"]");
-			selectWindow("DUP - drift corrected");
-			rename("SLICE");
+			setBatchMode(true); 
 			
-			if (i==0){
-				rename("AllStarStack");}
-			else {
-				// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
-				run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
-				rename("AllStarStack");}
-		
-			close("DUP");	
-		}
-		
-		selectWindow("AllStarStack");
-		run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
-		
-		run("Enhance Contrast", "saturated=0.35");
-		rename(filename_no_extension+"_xyCorrected");
-		Corrected_path_xy = results_path + File.separator + filename_no_extension+"_xyCorrected"; 
-		
-		if (crop_output){
-			minmaxXYdrift = getMinMaxXYFromDriftTable(DriftTable_path_XY);
-		
-			new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
-			new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
-			makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
-			run("Crop");
+			for (i = 0; i < slices; i++) {
+				showProgress(i, slices);
 			
-		}
-		
-		setBatchMode("show"); // don't remove
-		//setBatchMode(false);
+				selectWindow(thisTitle);
+				run("Duplicate...", "title=DUP duplicate slices="+(i+1));
+				run("32-bit");
+				run("F4DR Correct Drift", "choose=["+DriftTable_path_XY+"]");
+				selectWindow("DUP - drift corrected");
+				rename("SLICE");
+				
+				if (i==0){
+					rename("AllStarStack");
+				} else {
+					// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
+					run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
+					rename("AllStarStack");
+				}
 			
-		// Save intermediate file xy-correct //JP 	 
-		saveAs("Tiff", Corrected_path_xy);
-		close("*");
+				close("DUP");	
+			}
+		
+
+			selectWindow("AllStarStack");
+			run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
+			
+			run("Enhance Contrast", "saturated=0.35");
+			rename(filename_no_extension+"_xyCorrected");
+			Corrected_path_xy = results_path + File.separator + filename_no_extension+"_xyCorrected"; 
+		
+			if (crop_output){
+				minmaxXYdrift = getMinMaxXYFromDriftTable(DriftTable_path_XY);
+			
+				new_width = width - Math.ceil(minmaxXYdrift[1]) + Math.ceil(minmaxXYdrift[0]);
+				new_height = height - Math.ceil(minmaxXYdrift[3]) + Math.ceil(minmaxXYdrift[2]);
+				makeRectangle(Math.ceil(minmaxXYdrift[1]), Math.ceil(minmaxXYdrift[3]), new_width, new_height);
+				run("Crop");
+			}
+		
+			setBatchMode("show"); // don't remove
+		
+			// Save intermediate file xy-correct //JP 	 
+			saveAs("Tiff", Corrected_path_xy);
+			close("*");
 		
 		}
 		
@@ -163,8 +167,8 @@ for (p = 0; p < lengthOf(files); p++) {
 		
 		if (z_registration){
 		
-		t_start = getTime();
-		filename_no_extension = File.getNameWithoutExtension(files[p]);
+			t_start = getTime();
+			filename_no_extension = File.getNameWithoutExtension(files[p]);
 		
 		// ----- opening the correct file-----	
 			if (!XY_registration){
@@ -174,127 +178,121 @@ for (p = 0; p < lengthOf(files); p++) {
 				Corrected_image_xy = Corrected_path_xy+".tif";
 				options = "open=[" + Corrected_image_xy + "]";
 				run("TIFF Virtual Stack...", options);
-		
 			}
 		
-		setBatchMode(true); 
-		
-		thisTitle = getTitle();
-		
-		getVoxelSize(width, height, depth, unit);
-		run("Reslice [/]...", "output="+depth+" start="+reslice_mode+" avoid");
-		rename("DataRescliced");
-		
-		//------- Applying the correction -------- 
-		
-		if (!XY_registration) {
-			IJ.log("--------------------------------");
-			IJ.log("Now correcting image: " + filename_no_extension);
-
-		}
-		
-		IJ.log("Applying the z-correction to the stack....");
-		
-		if (extend_stack_to_fit){
-			minmaxZdrift = getMinMaxFromDriftTable(DriftTable_path_Z);
-			padding = 2*maxOf(-minmaxZdrift[0], minmaxZdrift[1]);
-		}
-		else {
-			padding = 0;
-		}
-		
-		selectWindow("DataRescliced");
-		getDimensions(width, height, channels, slices, frames);
-		getVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
-		padded_height = height + padding;
-		
-		if (!ram_conservative_mode){
-			newImage("DataRescliced_Corrected", "32-bit black", width, padded_height, slices*frames);
-			setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
-		}
-		
-		for (i = 0; i < slices; i++) {
-			showProgress(i, slices);
+			setBatchMode(true); 
 			
+			thisTitle = getTitle();
+			
+			getVoxelSize(width, height, depth, unit);
+			run("Reslice [/]...", "output="+depth+" start="+reslice_mode+" avoid");
+			rename("DataRescliced");
+		
+			//------- Applying the correction -------- 
+			
+			if (!XY_registration) {
+				IJ.log("--------------------------------");
+				IJ.log("Now correcting image: " + filename_no_extension);
+			}
+		
+			IJ.log("Applying the z-correction to the stack....");
+			
+			if (extend_stack_to_fit){
+				minmaxZdrift = getMinMaxFromDriftTable(DriftTable_path_Z);
+				padding = 2*maxOf(-minmaxZdrift[0], minmaxZdrift[1]);
+			} else {
+				padding = 0;
+			}
+		
 			selectWindow("DataRescliced");
+			getDimensions(width, height, channels, slices, frames);
+			getVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
+			padded_height = height + padding;
 		
-			if (ram_conservative_mode){
-				setSlice(1);
-				run("Duplicate...", "title=DUP duplicate slices=1");
+			if (!ram_conservative_mode){
+				newImage("DataRescliced_Corrected", "32-bit black", width, padded_height, slices*frames);
+				setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
 			}
-			else{
+		
+			for (i = 0; i < slices; i++) {
+				showProgress(i, slices);
+			
+				selectWindow("DataRescliced");
+		
+				if (ram_conservative_mode){
+					setSlice(1);
+					run("Duplicate...", "title=DUP duplicate slices=1");
+				} else {
 				run("Duplicate...", "title=DUP duplicate slices="+(i+1));
-			}
+				}
 		
-			run("Canvas Size...", "width="+width+" height="+(padded_height)+" position=Center zero");
-			run("F4DR Correct Drift", "choose=["+DriftTable_path_Z+"]");
-			rename("SLICE");
-			run("Hyperstack to Stack");
-		
-			if (ram_conservative_mode){
-				if (i==0){
-					rename("AllStarStack");
-					} else {
-					// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
-					run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
-					rename("AllStarStack");}
-			} else {
-			for (f = 0; f < frames; f++) {
-				selectWindow("SLICE");
-				setSlice(f+1);
-				run("Select All");
-				run("Copy");
-				selectWindow("DataRescliced_Corrected");
-				setSlice(i*frames + f+1);
-				run("Paste");		
+				run("Canvas Size...", "width="+width+" height="+(padded_height)+" position=Center zero");
+				run("F4DR Correct Drift", "choose=["+DriftTable_path_Z+"]");
+				rename("SLICE");
+				run("Hyperstack to Stack");
+			
+				if (ram_conservative_mode){
+					if (i==0){
+						rename("AllStarStack");
+						} else {
+						// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
+						run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
+						rename("AllStarStack");
+					}
+				} else {
+					for (f = 0; f < frames; f++) {
+						selectWindow("SLICE");
+						setSlice(f+1);
+						run("Select All");
+						run("Copy");
+						selectWindow("DataRescliced_Corrected");
+						setSlice(i*frames + f+1);
+						run("Paste");		
+					}
+				}
+					
+				close("DUP");
+			
+				if (ram_conservative_mode){
+					selectWindow("DataRescliced");
+					run("Delete Slice", "delete=slice");
+				} else {
+					close("SLICE");
 				}
 			}
-				
-			close("DUP");
-		
-			if (ram_conservative_mode){
-				selectWindow("DataRescliced");
-				run("Delete Slice", "delete=slice");
+			
+			if (!ram_conservative_mode){
+				close("DataRescliced");
+				selectWindow("DataRescliced_Corrected");
+				run("Select None");
+				run("Enhance Contrast", "saturated=0.35");
+			} else {
+				selectWindow("AllStarStack");
 			}
-			else {
-				close("SLICE");
+			
+			run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
+			getVoxelSize(width, height, depth, unit);
+			run("Reslice [/]...", "output="+depth+" start=Top avoid");
+			
+			if (reslice_mode == "Left"){
+				run("Flip Vertically", "stack");
+				run("Rotate 90 Degrees Right");
 			}
-		}
-		
-		if (!ram_conservative_mode){
-			close("DataRescliced");
-			selectWindow("DataRescliced_Corrected");
-			run("Select None");
+			
+			//save files here
+			if (!XY_registration) {
+				rename(filename_no_extension+"_zCorrected"); 
+				Corrected_path_z = results_path + File.separator + filename_no_extension+"_zCorrected"; 
+				saveAs("Tiff", Corrected_path_z);
+			} else {
+				rename(filename_no_extension+"_xyzCorrected");
+				Corrected_path_xyz = results_path + File.separator + filename_no_extension+"_xyzCorrected";
+				saveAs("Tiff", Corrected_path_xyz);
+			}   
+			
+			close("\\Others");
 			run("Enhance Contrast", "saturated=0.35");
 		}
-		else {
-			selectWindow("AllStarStack");
-		}
-		
-		run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
-		getVoxelSize(width, height, depth, unit);
-		run("Reslice [/]...", "output="+depth+" start=Top avoid");
-		
-		if (reslice_mode == "Left"){
-			run("Flip Vertically", "stack");
-			run("Rotate 90 Degrees Right");
-		}
-		
-		//save files here
-		if (!XY_registration) {
-			rename(filename_no_extension+"_zCorrected"); 
-			Corrected_path_z = results_path + File.separator + filename_no_extension+"_zCorrected"; 
-			saveAs("Tiff", Corrected_path_z);
-			} else {
-			rename(filename_no_extension+"_xyzCorrected");
-			Corrected_path_xyz = results_path + File.separator + filename_no_extension+"_xyzCorrected";
-			saveAs("Tiff", Corrected_path_xyz);
-			}   
-		
-		close("\\Others");
-		run("Enhance Contrast", "saturated=0.35");
-		
-		}
 	}
 }
 
@@ -327,10 +325,6 @@ function getMinMaxFromDriftTable(DriftTable_path_Z) {
 
 	return minmaxZdrift;
 }
-
-
-
-
 
 // ----- Helper functions -----
 function getMinMaxXYFromDriftTable(DriftTable_path_XY) {
