@@ -88,7 +88,7 @@ Prepare your image to have one channel. If you have multiple channels they can a
 - **Experiment number:** Will be used for the output folder identifier.
 - **Select the path to the file to be corrected:** Navigate to your image by using *Add files..* or drag and drop into the white box. Files can be 2D and 3D videos or a mixture of those.
 - **xy-drift correction:** if you want to correct for xy-drift, tick the xy-drift correction box.
-- **Projection type:** Select the projection type used for xy-drift estimation (maximum or average intensity).
+- **Projection type:** Select the projection type used for xy-drift estimation (maximum or average intensity). Average projection usually works better for very noisy images.
 - **Time averaging:** This sets the number of frames to average together to make coarser time points on which the
 cross-correlation analysis will be run to calculate drift. Setting this value to 1 will calculate
 straight frame-to-frame cross-correlations and while this should capture drift very accurately, it
@@ -97,18 +97,17 @@ but will also give a lower sample of the drift (which is then interpolated).
 - **Maximum expected drift:** This refers to the maximum expected drift between the first frame of the dataset and the last
 frame of the dataset in units of pixels. Setting this to 0 will allow the algorithm to automatically
 determine the drift without any limitations. It is only really worth changing this value from 0 if
-running the algorithm gives incorrect results with large jumps in estimated drift.
+running the algorithm gives incorrect results with too large jumps in estimated drift.
 - **Reference frame:** If this is set to ‘first frame (default, better for fixed)’ then every averaged group of frames will be
 compared to the first average group of frames to calculate drift. If this is set to ‘previous frame
 (better for live)’ then every averaged group of frames will be compared to the previous averaged
-group of frames. For static samples, it is best to
-compare to the first frame, and for live samples where there may be slow scale drift overlaying
+group of frames. For static samples, it is best to compare to the first frame, and for live samples where there may be slow scale drift overlaying
 the faster scale sample motion, it is better to compare to the previous frame.
 - **Crop output:** Crop output will crop out the black frame created by the image moving.
 - **z-drift correction:** If you want to correct for z-drift, tick the z-drift correction box.
-- **Reslice mode:** Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
-- **Projection type:** Select the projection type used for z-drift estimation (maximum or average intensity) 
-- **Extend stack to fit:** Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved.
+- **Reslice mode:** Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left). 
+- **Projection type:** Select the projection type used for z-drift estimation (maximum or average intensity). Average projection usually works better for very noisy images.
+- **Extend stack to fit:** Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved while moving up and/or down.
 - **Save RAM:** If ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
   
 3. Click ok. The script will run.
