@@ -104,7 +104,7 @@ compared to the first average group of frames to calculate drift. If this is set
 group of frames. For static samples, it is best to
 compare to the first frame, and for live samples where there may be slow scale drift overlaying
 the faster scale sample motion, it is better to compare to the previous frame.
-- **Crop output:** Crop output will crop out the black frame created by the image moving. This will be performed on default if continued to z-correction.
+- **Crop output:** Crop output will crop out the black frame created by the image moving.
 - **z-drift correction:** If you want to correct for z-drift, tick the z-drift correction box.
 - **Reslice mode:** Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left).
 - **Projection type:** Select the projection type used for z-drift estimation (maximum or average intensity) 
