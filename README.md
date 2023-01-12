@@ -173,6 +173,10 @@ Laine, R. F., Tosheva, K. L., Gustafsson, N., Gray, R., Almada, P., Albrecht, D.
 Pylvänäinen J.W., Laine, R. F., Ghimire, S., Follain G., Henriques, R & Jacquemet G. (2022). Fast4DReg: Fast registration of 4D microscopy datasets. bioRxiv 2022.08.22.504744; https://doi.org/10.1101/2022.08.22.504744
 
 # Change log
+
+  **230112 Version 2.1 (the clean 'n fast dimensionalist)**
+
+Fast4Dreg code has been cleaned and the RAM saving mode improved. The RAM saving mode now runs significantly faster than before.
  
   **221014 Version 2.0 (the dimensionalist)**
 
