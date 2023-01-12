@@ -108,7 +108,7 @@ the faster scale sample motion, it is better to compare to the previous frame.
 - **Reslice mode:** Reslice mode lets you decide if you want to create the projection along the x-axis (top) or y-axis (left). 
 - **Projection type:** Select the projection type used for z-drift estimation (maximum or average intensity). Average projection usually works better for very noisy images.
 - **Extend stack to fit:** Extend stack to fit will create extra slices to the stack to ensure that the whole stack is saved while moving up and/or down.
-- **Save RAM:** If ticked the z-corrected image is built frame by frame instead of building the image in one go. This saves RAM but approximately doubles the time for processing.
+- **Save RAM:** If ticked the image will be converted to 32-bit, but the original bit-depth is kept. This saves RAM and speeds up the process.
   
 3. Click ok. The script will run.
 4. When the script has completed the process, you will have the following files in a new folder:
