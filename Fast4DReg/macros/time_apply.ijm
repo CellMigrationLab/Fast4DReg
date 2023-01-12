@@ -14,7 +14,7 @@ microscopy toolbox, doi: 10.1088/1361-6463/ab0261.
 
 Authors: Joanna W Pylvänäinen, Guillaume Jacquemet, Romain F Laine, Bruno Saraiva
 Contact: joanna.pylvanainen@abo.fi
-Version: 2.1 (the clean dimensionalist)
+Version: 2.1 (the clean 'n fast dimensionalist)
 Documentation: https://github.com/guijacquemet/Fast4DReg
 Licence: MIT
 
