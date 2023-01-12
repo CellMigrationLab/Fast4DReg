@@ -258,7 +258,11 @@ for (p = 0; p < lengthOf(files); p++) {
 				
 				selectWindow(thisTitle);
 				run("Duplicate...", "title=DUP duplicate slices="+(i+1));
-				run("32-bit");
+
+				if(!ram_conservative_mode){
+					run("32-bit");
+				}
+
 				run("F4DR Correct Drift", "choose=["+DriftTable_path_XY+"DriftTable.njt]");
 				selectWindow("DUP - drift corrected");
 				rename("SLICE");
@@ -390,68 +394,47 @@ for (p = 0; p < lengthOf(files); p++) {
 			getDimensions(width, height, channels, slices, frames);
 			getVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
 			padded_height = height + padding;
-			
+			bit1 = bitDepth();
+		
 			if (!ram_conservative_mode){
 				newImage("DataRescliced_Corrected", "32-bit black", width, padded_height, slices*frames);
-				setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);	
+				setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
+			} else {
+				newImage("DataRescliced_Corrected", bit1 + "black", width, padded_height, slices*frames);
+				setVoxelSize(width_realspace, height_realspace, depth_realspace, unit_realspace);
 			}
-		
+			
 			for (i = 0; i < slices; i++) {
 				showProgress(i, slices);
 				selectWindow("DataRescliced");
 			
-				if (ram_conservative_mode){
-					setSlice(1);
-					run("Duplicate...", "title=DUP duplicate slices=1");
-				} else {
-					run("Duplicate...", "title=DUP duplicate slices="+(i+1));
-				}
-			
+				run("Duplicate...", "title=DUP duplicate slices="+(i+1));
 				run("Canvas Size...", "width="+width+" height="+(padded_height)+" position=Center zero");
 				
 				run("F4DR Correct Drift", "choose=["+DriftTable_path_Z+"DriftTable.njt]");
 				rename("SLICE");
 				run("Hyperstack to Stack");
 			
-				if (ram_conservative_mode){
-					if (i==0){
-						rename("AllStarStack");
-					} else {
-						// This is potentially what makes it so slow as it needs to dump and recreate the stack every time
-						run("Concatenate...", "  image1=AllStarStack image2=SLICE image3=[-- None --]");
-						rename("AllStarStack");
-					}
-				} else {
-					for (f = 0; f < frames; f++) {
-						selectWindow("SLICE");
-						setSlice(f+1);
-						run("Select All");
-						run("Copy");
-						selectWindow("DataRescliced_Corrected");
-						setSlice(i*frames + f+1);
-						run("Paste");		
-					}
+				for (f = 0; f < frames; f++) {
+					selectWindow("SLICE");
+					setSlice(f+1);
+					run("Select All");
+					run("Copy");
+					selectWindow("DataRescliced_Corrected");
+					setSlice(i*frames + f+1);
+					run("Paste");		
+					
 				}
 				
 				close("DUP");
-		
-				if (ram_conservative_mode){
-					selectWindow("DataRescliced");
-					run("Delete Slice", "delete=slice");
-				} else {
-					close("SLICE");
-				}
+				close("SLICE");
 			}
 		
-			if (!ram_conservative_mode){
-				close("DataRescliced");
-				selectWindow("DataRescliced_Corrected");
-				run("Select None");
-				run("Enhance Contrast", "saturated=0.35");
-			} else {
-				selectWindow("AllStarStack");
-			}
-		
+			close("DataRescliced");
+			selectWindow("DataRescliced_Corrected");
+			run("Select None");
+			run("Enhance Contrast", "saturated=0.35");
+
 			run("Stack to Hyperstack...", "order=xyctz channels=1 slices="+slices+" frames="+frames+" display=Color");
 			getVoxelSize(width, height, depth, unit);
 			run("Reslice [/]...", "output="+depth+" start=Top avoid");
@@ -558,5 +541,5 @@ for (p = 0; p < lengthOf(files); p++) {
 IJ.log("==============================");
 IJ.log("==============================");
 IJ.log("All DONE! Total time: " +round((getTime()-t_start)/1000)+"s");
-showMessage("All DONE!");
+
 
