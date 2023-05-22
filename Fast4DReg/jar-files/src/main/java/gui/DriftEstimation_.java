@@ -1,9 +1,11 @@
 package gui;
 
+import array.ArrayInitialization;
+import featureExtraction.ExtractRois;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.gui.NonBlockingGenericDialog;
+import ij.gui.GenericDialog;
 import ij.gui.Plot;
 import ij.gui.PointRoi;
 import ij.gui.Roi;
@@ -11,8 +13,6 @@ import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import array.ArrayInitialization;
-import featureExtraction.ExtractRois;
 import image.transform.CrossCorrelationMap;
 
 import java.io.File;
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static java.lang.Math.*;
 import static array.ArrayCasting.floatToDouble;
 import static image.drift.EstimateShiftAndTilt.MAX_FITTING;
 import static image.drift.EstimateShiftAndTilt.getShiftFromCrossCorrelationPeak;
@@ -29,6 +28,7 @@ import static imagej.FilesAndFoldersTools.getSavePath;
 import static imagej.ResultsTableTools.dataMapToResultsTable;
 import static io.OpenNanoJDataset.openNanoJDataset;
 import static io.SaveNanoJTable.saveNanoJTable;
+import static java.lang.Math.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,7 +43,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
     private boolean showDriftPlot, showDriftTable, showCrossCorrelationMap, apply, doBatch;
     private String filePath, batchFolderPath, saveFolderPath;
     private ApplyDriftCorrection adc = new ApplyDriftCorrection();
-    private String[] options = new String[] {"first frame (default, better for fixed)", "previous frame (better for live)"};
+    private String[] options = new String[]{"first frame (default, better for fixed)", "previous frame (better for live)"};
     private int refOption;
 
     @Override
@@ -57,7 +57,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
     @Override
     public void setupDialog() {
 
-        gd = new NonBlockingGenericDialog("Estimate Drift...");
+        gd = new GenericDialog("Estimate Drift...");
         gd.addNumericField("Time averaging (default: 100, 1 - disables)", getPrefs("timeAveraging", 100), 0);
         gd.addNumericField("Max expected drift (pixels, 0 - auto)", getPrefs("maxExpectedDrift", 10), 0);
         gd.addChoice("Reference frame", options, options[getPrefs("refOption", 0)]);
@@ -107,7 +107,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
             if (imp != null) imp.close();
             batchFolderPath = IJ.getDir("Folder with .nji datasets...");
 
-            for (File f: new File(batchFolderPath).listFiles()) {
+            for (File f : new File(batchFolderPath).listFiles()) {
                 if (!prefs.continueNanoJCommand()) {
                     log.abort();
                     return;
@@ -115,25 +115,23 @@ public class DriftEstimation_ extends _BaseDialog_ {
 
                 if (f.getName().endsWith("000.nji")) {
                     filePath = f.getPath().replace("000.nji", "");
-                    if (new File(filePath+"DriftTable.njt").exists()) continue;
+                    if (new File(filePath + "DriftTable.njt").exists()) continue;
 
                     // do analysis
                     impPath = f.getPath();
                     imp = openNanoJDataset(impPath);
                     imp.show();
 
-                    log.msg("Starting analysis of: "+f.getPath());
+                    log.msg("Starting analysis of: " + f.getPath());
                     filePath = f.getPath().replace("000.nji", "");
                     runAnalysis(imp);
                     imp.close();
                 }
             }
-        }
-
-        else {
-            if (imp == null){
+        } else {
+            if (imp == null) {
                 setupImp();
-                if(imp == null) return;
+                if (imp == null) return;
             }
 
             if (filePath == null) {
@@ -165,18 +163,18 @@ public class DriftEstimation_ extends _BaseDialog_ {
 
         ImageStack imsAverage = new ImageStack(rw, rh);
 
-        for (int tb=0; tb<timeBlocks; tb++) {
+        for (int tb = 0; tb < timeBlocks; tb++) {
             if (!prefs.continueNanoJCommand()) {
                 log.abort();
                 return;
             }
 
             log.status("preparing data... ");
-            log.progress(tb+1, timeBlocks);
+            log.progress(tb + 1, timeBlocks);
 
             // case of no temporal averaging
             if (timeAveraging == 1) {
-                FloatProcessor fpFrame = ims.getProcessor(tb+1).convertToFloatProcessor();
+                FloatProcessor fpFrame = ims.getProcessor(tb + 1).convertToFloatProcessor();
                 if (r != null) {
                     fpFrame.setRoi(r);
                     fpFrame = (FloatProcessor) fpFrame.crop();
@@ -195,7 +193,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
             int counter = 0;
 
             for (int t = tStart; t < tStop; t++) {
-                FloatProcessor fpFrame = ims.getProcessor(t+1).convertToFloatProcessor();
+                FloatProcessor fpFrame = ims.getProcessor(t + 1).convertToFloatProcessor();
                 if (r != null) {
                     fpFrame.setRoi(r);
                     fpFrame = (FloatProcessor) fpFrame.crop();
@@ -203,7 +201,8 @@ public class DriftEstimation_ extends _BaseDialog_ {
 
                 float[] pixelsFrame = (float[]) fpFrame.getPixels();
                 counter++;
-                for (int p=0; p<pixelsFrame.length; p++) pixelsAverage[p] += (pixelsFrame[p] - pixelsAverage[p]) / counter;
+                for (int p = 0; p < pixelsFrame.length; p++)
+                    pixelsAverage[p] += (pixelsFrame[p] - pixelsAverage[p]) / counter;
             }
         }
 
@@ -222,12 +221,12 @@ public class DriftEstimation_ extends _BaseDialog_ {
         else imsCCM = calculateCrossCorrelationMap(null, imsAverage, true);
 
         if (maxExpectedDrift != 0 &&
-                maxExpectedDrift*2+1 < imsCCM.getWidth() &&
-                maxExpectedDrift*2+1 < imsCCM.getHeight()) {
-            int xStart = imsCCM.getWidth()/2 - maxExpectedDrift;
-            int yStart = imsCCM.getHeight()/2 - maxExpectedDrift;
+                maxExpectedDrift * 2 + 1 < imsCCM.getWidth() &&
+                maxExpectedDrift * 2 + 1 < imsCCM.getHeight()) {
+            int xStart = imsCCM.getWidth() / 2 - maxExpectedDrift;
+            int yStart = imsCCM.getHeight() / 2 - maxExpectedDrift;
             log.status("cropping cross-correlation map...");
-            imsCCM = imsCCM.crop(xStart, yStart, 0, maxExpectedDrift*2+1, maxExpectedDrift*2+1, imsCCM.getSize());
+            imsCCM = imsCCM.crop(xStart, yStart, 0, maxExpectedDrift * 2 + 1, maxExpectedDrift * 2 + 1, imsCCM.getSize());
         }
         CrossCorrelationMap.showProgress = false;
 
@@ -241,12 +240,12 @@ public class DriftEstimation_ extends _BaseDialog_ {
             driftX[p] = drift[1][p] - biasX;
             driftY[p] = drift[2][p] - biasY;
             if (refOption == 1 && p > 0) {
-                driftX[p] += driftX[p-1];
-                driftY[p] += driftY[p-1];
+                driftX[p] += driftX[p - 1];
+                driftY[p] += driftY[p - 1];
             }
         }
 
-        if (timeAveraging>1) {
+        if (timeAveraging > 1) {
             // interpolate data
             FloatProcessor fpDriftX = new FloatProcessor(timeBlocks, 1, driftX);
             FloatProcessor fpDriftY = new FloatProcessor(timeBlocks, 1, driftY);
@@ -260,7 +259,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
         }
 
         double[] driftXY = new double[nSlices];
-        for (int p=0; p<nSlices; p++) driftXY[p] = (float) sqrt(pow(driftX[p],2)+pow(driftY[p], 2));
+        for (int p = 0; p < nSlices; p++) driftXY[p] = (float) sqrt(pow(driftX[p], 2) + pow(driftY[p], 2));
 
         // Create drift table
         log.status("populating drift table...");
@@ -273,7 +272,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
             ResultsTable rt = dataMapToResultsTable(data);
             rt.show("Drift-Table");
         }
-        saveNanoJTable(filePath+"DriftTable.njt", getPrefs(), data);
+        saveNanoJTable(filePath + "DriftTable.njt", getPrefs(), data);
 
         // Create drift plot
         if (showDriftPlot) {
@@ -287,11 +286,10 @@ public class DriftEstimation_ extends _BaseDialog_ {
                 plotDrift.show();
                 plotDriftX.show();
                 plotDriftY.show();
-            }
-            else {
-                IJ.saveAsTiff(plotDrift.getImagePlus(), filePath+"DriftPlot");
-                IJ.saveAsTiff(plotDriftX.getImagePlus(), filePath+"DriftXPlot");
-                IJ.saveAsTiff(plotDriftY.getImagePlus(), filePath+"DriftYPlot");
+            } else {
+                IJ.saveAsTiff(plotDrift.getImagePlus(), filePath + "DriftPlot");
+                IJ.saveAsTiff(plotDriftX.getImagePlus(), filePath + "DriftXPlot");
+                IJ.saveAsTiff(plotDriftY.getImagePlus(), filePath + "DriftYPlot");
             }
         }
 
@@ -300,7 +298,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
             ImagePlus impCCM = new ImagePlus("Average CCM", imsCCM);
 
             if (doBatch)
-                IJ.saveAsTiff(impCCM, filePath+"CrossCorrelationMap");
+                IJ.saveAsTiff(impCCM, filePath + "CrossCorrelationMap");
             else {
                 impCCM.show();
                 float radiusX = imsCCM.getWidth() / 2f;
@@ -325,8 +323,7 @@ public class DriftEstimation_ extends _BaseDialog_ {
             if (doBatch) {
                 IJ.saveAsTiff(impDC, filePath + "DriftCorrected");
                 impDC.close();
-            }
-            else
+            } else
                 impDC.show();
         }
     }

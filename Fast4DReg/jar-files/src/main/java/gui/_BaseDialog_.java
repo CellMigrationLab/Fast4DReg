@@ -5,7 +5,6 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.DialogListener;
 import ij.gui.GenericDialog;
-import ij.gui.NonBlockingGenericDialog;
 import ij.plugin.FolderOpener;
 import ij.plugin.PlugIn;
 import tools.Log;
@@ -26,7 +25,7 @@ import static io.OpenNanoJDataset.openNanoJDataset;
  */
 public abstract class _BaseDialog_ extends Thread implements PlugIn {
 
-    public NonBlockingGenericDialog gd = null;
+    public GenericDialog gd = null;
     protected Font headerFont = new Font("Arial", Font.BOLD, 16);
 
     public ImagePlus imp = null;
