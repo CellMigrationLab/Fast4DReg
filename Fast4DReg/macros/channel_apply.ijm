@@ -43,6 +43,8 @@ IJ.log("== Fast4DReg - apply drift correction - multi-channel images ===========
 print("Number of files to correct: " + lengthOf(files)); 
 IJ.log("Destination folder: " + results_path);
 
+run("Bio-Formats Macro Extensions");
+
 for (p = 0; p < lengthOf(files); p++) {
 	
 	setBatchMode(true); 																																															
@@ -66,8 +68,7 @@ for (p = 0; p < lengthOf(files); p++) {
 	
 	t_start = getTime();
 	
-	options = "open=[" + files[p] + "] autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
-	run("Bio-Formats", options);
+	Ext.openImagePlus(files[p]);
 	
 	//swap channels to time	
 	run("Re-order Hyperstack ...", "channels=[Frames (t)] slices=[Slices (z)] frames=[Channels (c)]");

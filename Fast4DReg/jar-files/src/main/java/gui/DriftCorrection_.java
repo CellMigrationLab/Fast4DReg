@@ -2,7 +2,7 @@ package gui;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.NonBlockingGenericDialog;
+import ij.gui.GenericDialog;
 import io.LoadNanoJTable;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class DriftCorrection_ extends _BaseDialog_ {
 
     @Override
     public void setupDialog() {
-        gd = new NonBlockingGenericDialog("Apply Drift Correction...");
+        gd = new GenericDialog("Apply Drift Correction...");
         gd.addMessage("Requires a NanoJ table from previous drift estimation");
     }
 

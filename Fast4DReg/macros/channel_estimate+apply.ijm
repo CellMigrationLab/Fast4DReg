@@ -76,6 +76,7 @@ print("Number of files to correct: " + lengthOf(files));
 //======================================================================
 // ----- Let's go ! -----
 
+run("Bio-Formats Macro Extensions");
 
 for (p = 0; p < lengthOf(files); p++) {
 	
@@ -85,8 +86,7 @@ for (p = 0; p < lengthOf(files); p++) {
 	
 	p_start = getTime();
 	
-	options = "open=[" + files[p] + "] autoscale color_mode=Default stack_order=XYCZT use_virtual_stack "; // here using bioformats
-	run("Bio-Formats", options);
+	Ext.openImagePlus(files[p]);
 	
 	// study the image
 	getDimensions(width, height, channels, slices, frames);
