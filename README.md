@@ -175,6 +175,7 @@ Pylvänäinen J.W., Laine, R. F., Ghimire, S., Follain G., Henriques, R & Jacque
 # Change log
 
   **230923 Version 2.1 (the clean 'n fast dimensionalist)**
+
 Made compatible with headless execution.
 
   **230112 Version 2.1 (the clean 'n fast dimensionalist)**
