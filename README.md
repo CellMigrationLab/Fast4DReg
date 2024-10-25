@@ -6,6 +6,11 @@ Fast4DReg is a Fiji macro for drift correction for 2D and 3D video and is able t
 
 ![example1](https://user-images.githubusercontent.com/74545655/174895500-48bf89f0-3bbe-4073-9dff-b7da828d78ef.gif)
 
+## Related projects
+
+Check-out a Napari plugin created by Marcel Issler based on Fast4DReg [here](https://github.com/COSC-Lab/napari-fast4dreg)
+
+
 ## Fast4DReg tools
 
 Fast4DReg consists of four scripts, and two sub-menus. The Legacy 2D menu stores estimate and apply functions used in the script. These function are macro callable. NanoJTable IO menu stores functions for opening and saving the NanoJ tables, also macro callable. 
