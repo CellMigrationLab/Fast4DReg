@@ -171,7 +171,7 @@ If you create a settings file with the *estimate+apply* -script and use it to co
 
 
 
-# When using this script, please cite the NanoJ paper and our pre-print
+# When using this script, please cite the NanoJ paper and the original publication
 
 Laine, R. F., Tosheva, K. L., Gustafsson, N., Gray, R., Almada, P., Albrecht, D., Risa, G. T., Hurtig, F., Lindås, A. C., Baum, B., Mercer, J., Leterrier, C., Pereira, P. M., Culley, S., & Henriques, R. (2019). NanoJ: a high-performance open-source super-resolution microscopy toolbox. Journal of physics D: Applied physics, 52(16), 163001. https://doi.org/10.1088/1361-6463/ab0261
 
