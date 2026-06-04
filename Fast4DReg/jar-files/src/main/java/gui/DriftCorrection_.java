@@ -2,6 +2,7 @@ package gui;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.Macro;
 import ij.gui.GenericDialog;
 import io.LoadNanoJTable;
 
@@ -31,18 +32,38 @@ public class DriftCorrection_ extends _BaseDialog_ {
 
     @Override
     public boolean loadSettings() {
-        String driftTablePath = IJ.getFilePath("Choose Drift-Table to load...");
+        return true;
+    }
+
+    @Override
+    public boolean loadSettingsFromPrefs() {
+        String driftTablePath = Macro.getValue(arg, "choose", null);
+        if (driftTablePath == null || driftTablePath.equals(""))
+            driftTablePath = IJ.getFilePath("Choose Drift-Table to load...");
+        if (driftTablePath == null || driftTablePath.equals("")) return false;
+
         Map<String, double[]> driftTable;
         try {
             driftTable = new LoadNanoJTable(driftTablePath).getData();
-            if (driftTable.get("X-Drift (pixels)").length != imp.getImageStack().getSize()) {
+            driftX = driftTable.get("X-Drift (pixels)");
+            driftY = driftTable.get("Y-Drift (pixels)");
+            if (driftX == null || driftY == null) {
+                IJ.error("Drift-table does not contain X-Drift (pixels) and Y-Drift (pixels) columns.\n" +
+                        "Available columns: " + driftTable.keySet());
+                return false;
+            }
+            if (driftX.length != imp.getImageStack().getSize()) {
                 IJ.error("Number of frames in drift-table different from number of frames in image...");
                 return false;
             }
-            driftX = driftTable.get("X-Drift (pixels)");
-            driftY = driftTable.get("Y-Drift (pixels)");
+            if (driftY.length != driftX.length) {
+                IJ.error("X and Y drift columns have different lengths...");
+                return false;
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            IJ.error("Could not open Drift-Table:\n" + e.getMessage());
+            return false;
         }
 
         return true;
