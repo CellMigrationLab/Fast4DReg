@@ -2,7 +2,7 @@
 
 # Overview
 
-Fast4DReg is a Fiji macro for drift correction for 2D and 3D video and is able to correct drift in all x-, y- and/or z-directions. Fast4DReg creates intensity projections along both axes and estimates their drift using cross-correlation based drift correction, and then translates the video frame by frame (Figure 1). Additionally, Fast4DReg can be used for aligning multi-channel 2D or 3D images which is particularly useful for instruments that suffer from a misalignment of channels.
+Fast4DReg is a Fiji macro for drift correction for 2D and 3D videos and is able to correct drift in all x-, y- and/or z-directions. Fast4DReg creates intensity projections along both axes and estimates their drift using cross-correlation based drift correction, and then translates the video frame by frame (Figure 1). Additionally, Fast4DReg can be used for aligning multi-channel 2D or 3D images, which is particularly useful for instruments that suffer from channel misalignment.
 
 ![example1](https://user-images.githubusercontent.com/74545655/174895500-48bf89f0-3bbe-4073-9dff-b7da828d78ef.gif)
 
@@ -19,13 +19,13 @@ Fast4DReg consists of four scripts, and two sub-menus. The Legacy 2D menu stores
 
 ### Fast4DReg scripts
 
-- **time_estimate+apply:** This script estimates drift in a 2D or 3D video and applies the correction to the same dataset. Correction can be performed for a single or multiple 2D and/or 3D videos in batch. The script will also output a *settings.csv* file with relevant script parameters and file paths. This file can be use to correct a similar drift in another dataset, for example another channel.
+- **time_estimate+apply:** This script estimates drift in a single-channel XYT or XYZT time series and applies the correction to the same dataset. Correction can be performed for multiple time series in batch. The script also outputs a *settings.csv* file with relevant script parameters and file paths. This file can be used to correct a similar time series, for example a separate channel from the same acquisition.
 
-- **time_apply:** This script will apply a drift correction from *settings.csv* a to another video with same frame number.
+- **time_apply:** This script applies a drift correction from *settings.csv* to another single-channel XYT or XYZT time series with the same number of frames.
 
-- **channel_estimate+apply:** This script estimates misalignement of channels in a 2D or 3D dataset and applies the correction to the same dataset. Correction can be performed for a single or multiple 2D and/or 3D videos in batch. The script will also output a *settings.csv* file with relevant script parameters and file paths. This file can be use to correct a similar drift in another dataset.
+- **channel_estimate+apply:** This script estimates channel misalignment in a single XYC or XYZC hyperstack and applies the correction to the same dataset. Correction can be performed for multiple hyperstacks in batch. The script also outputs a *settings.csv* file with relevant script parameters and file paths. This file can be used to correct a similar multi-channel image.
 
-- **channel_apply:** This script will apply a drift correction from *settings.csv* a to another multi-channel image.
+- **channel_apply:** This script applies a channel correction from *settings.csv* to another XYC or XYZC hyperstack.
 
 
 ### Drift correction workflow
@@ -40,7 +40,7 @@ Fast4DReg consists of four scripts, and two sub-menus. The Legacy 2D menu stores
 5. Fast4DReg uses a drift correction algorithm to estimate the linear z-drift between two images by calculating their cross-correlation matrix (CCM). The location of the peak intensity in the CCM determines the linear shift between the two images. Depending on the data, either the first frame or the previous frame of the raw data can be set as the reference frame.
 6. Once the z-drift is estimated, the dataset can be directly corrected frame by frame according to the amount of estimated drift.
 
-If using multichannel images, the channels need to be split. The drift will be estimated according to the channel that has more stable structures (for example endothelium instead of migrating cancer cells). The drift correction can then be applied to the second (or more) channels by using the time_apply script.
+For time registration of a multichannel time series, split the channels first. Estimate drift from the channel with the most stable structures (for example, endothelium instead of migrating cancer cells), then use **time_apply** to apply the correction to each separate channel. This channel-splitting workflow applies only to time registration.
 
 ![image](images/Fast4DReg-methodDescription.png)
 
@@ -51,7 +51,7 @@ If using multichannel images, the channels need to be split. The drift will be e
 
 ### Fast4DReg
 
-Fast4DReg is easy to istall by enabling the Fast4DReg update site:
+Fast4DReg is easy to install by enabling the Fast4DReg update site:
 - Open ImageJ 
 - Navigate to *Help -> Update -> Manage update sites*
 - Select Fast4DReg
@@ -80,10 +80,12 @@ Fast4DReg is dependent on **Bio-Formats**, which can be installed through the Fi
 
 **Before starting**
 
-Prepare your image to have one channel. If you have multiple channels they can all be in the same folder as separate files.
+Time registration requires a single-channel XYT or XYZT time series. Separate XYZ volumes are not a time series. For a multichannel time series, split the channels before running this workflow; estimate drift from one channel, then use **time_apply** for each separate channel. Each input to **time_apply** must also be a single-channel XYT or XYZT time series with the same number of frames.
+
+For channel registration, channels must be combined into one XYC or XYZC hyperstack. Separate XYZ channel files must be combined before running **channel_estimate+apply** or **channel_apply**. Do not split channels for channel registration.
 
 **Running the script**
-1. Open the "time_estimate+apply" from the Fiji Plugins menu: *Plugins -> Fast4FReg -> time_estimate+apply.* The user interface opens.
+1. Open the "time_estimate+apply" from the Fiji Plugins menu: *Plugins -> Fast4DReg -> time_estimate+apply.* The user interface opens.
 
 ![image](images/Fast4Dreg-estimateUI.png)
 
@@ -127,14 +129,14 @@ the faster scale sample motion, it is better to compare to the previous frame.
   
 ### Apply drift
 
-1. Open the "time_apply" from the Fiji Plugins menu: *Plugins -> Fast4FReg -> time_apply.* The user interface opens. 
+1. Open the "time_apply" from the Fiji Plugins menu: *Plugins -> Fast4DReg -> time_apply.* The user interface opens.
 
 ![image](images/Fast4DReg-applyUI.png)
 
 *Figure 3: Apply user interface*
 
 
-- **Select the path to the file to be corrected:** Navigate to your image by using *Add files..* or drag and drop into the white box. The files can be located in different folders.
+- **Select the path to the file to be corrected:** Navigate to your image by using *Add files..* or drag and drop into the white box. The files can be located in different folders and must have the same number of frames as the time series used to create the settings file.
 
 - **Select the settings file (csv.):** Navigate to your settings file (called settings.csv).
 
@@ -158,7 +160,7 @@ Try disabling time averaging (1).
 
 **Operating system specificity**
 
-If you create a settings file with the *estimate+apply* -script and use it to correct other image by using the *apply*-script, make sure you use the same operating system (i.g PC, Mac, Linux).
+If you create a settings file with the *estimate+apply* script and use it to correct another image with the *apply* script, make sure you use the same operating system (e.g., PC, Mac, Linux).
 
 
 # Contributors
@@ -185,7 +187,7 @@ Made compatible with headless execution.
 
   **230112 Version 2.1 (the clean 'n fast dimensionalist)**
 
-Fast4Dreg code has been cleaned and the RAM saving mode improved. The RAM saving mode now runs significantly faster than before.
+Fast4DReg code has been cleaned and the RAM saving mode improved. The RAM saving mode now runs significantly faster than before.
  
   **221014 Version 2.0 (the dimensionalist)**
 
@@ -194,4 +196,3 @@ Fast4Dreg code has been cleaned and the RAM saving mode improved. The RAM saving
  **220222 Version 1.0 (pre-print)**
  
 All four scripts have been tested and work well. Ready for pre-print.
-
